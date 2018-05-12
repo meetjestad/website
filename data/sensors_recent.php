@@ -1,9 +1,4 @@
-<?php if ($_GET['export']) {
-	header('Content-Type: text/csv; charset=utf-8');
-	header('Content-Disposition: attachment; filename=mjs.csv');
-	print("sep=;\n");
-
-} else {
+<?
 	header('Content-Type: text/html; charset=utf-8');
 ?>
 <!DOCTYPE html>
@@ -28,7 +23,6 @@
 				<th>Radiogegevens</th>
 			</tr>
 <?php
-	}
 	// connect to database
 	include ("../connect.php");
 	$database = Connection();
@@ -64,15 +58,7 @@
 	$count_per_station = array();
 
 	function output_cell($rowspan, $data) {
-		if ($_GET['export']) {
-			if ($_GET['comma_decimal'] && is_numeric($data)) {
-				echo(str_replace('.', ',', $data) . ';');
-			} else {
-				echo($data . ';');
-			}
-		} else {
-			echo("  <td rowspan=\"$rowspan\"> " . $data . "</td>\n");
-		}
+		echo("  <td rowspan=\"$rowspan\"> " . $data . "</td>\n");
 	}
 
 	while($row = $result->fetch_array(MYSQLI_ASSOC)) {
@@ -117,45 +103,23 @@
 
 		$first = true;
 		foreach ($gateways as $gwdata) {
-			if (!$_GET['export'])
-				echo("<tr>\n");
+			echo("<tr>\n");
 			if ($first) {
 
 				$url = '?sensor=' . $row["station_id"] . '&amp;limit=50';
 
-				if ($_GET['export'])
-					output_cell($rowspan, $row["station_id"]);
-				else
-					output_cell($rowspan, "<a href=\"" . $url . "\">" . $row["station_id"] . "</a>");
+				output_cell($rowspan, "<a href=\"" . $url . "\">" . $row["station_id"] . "</a>");
 
 				$datetime = DateTime::createFromFormat('Y-m-d H:i:s', $row['timestamp'], new DateTimeZone('UTC'));
 				$datetime->setTimeZone(new DateTImeZone('Europe/Amsterdam'));
 				output_cell($rowspan, $datetime->format('Y-m-d H:i:s'));
-				if ($_GET['export'])
-					output_cell($rowspan, $row["temperature"]);
-				else
-					output_cell($rowspan, $row["temperature"] . "°C");
-				if ($_GET['export'])
-					output_cell($rowspan, $row["humidity"]);
-				else
-					output_cell($rowspan, $row["humidity"] . "%");
+				output_cell($rowspan, $row["temperature"] . "°C");
+				output_cell($rowspan, $row["humidity"] . "%");
 				if ($row['battery'] && $row['supply']) {
-					if ($_GET['export']) {
-						output_cell($rowspan, round($row["battery"],2));
-						output_cell($rowspan, round($row['supply'],2));
-					} else {
-						output_cell($rowspan, round($row["battery"],2) . "V / " . round($row['supply'],2) . "V");
-					}
+					output_cell($rowspan, round($row["battery"],2) . "V / " . round($row['supply'],2) . "V");
 				} else if ($row['supply']) {
-					if ($_GET['export']) {
-						output_cell($rowspan, '-');
-						output_cell($rowspan, round($row['supply'],2));
-					} else {
-						output_cell($rowspan, round($row['supply'],2) . "V");
-					}
+					output_cell($rowspan, round($row['supply'],2) . "V");
 				} else {
-					if ($_GET['export'])
-						output_cell($rowspan, '-');
 					output_cell($rowspan, '-');
 				}
 				if ($row['firmware_version'] === null)
@@ -163,19 +127,10 @@
 				else
 					output_cell($rowspan, 'v' . $row['firmware_version']);
 				if ($row['latitude'] == '0.0' && $row['longitude'] == '0.0') {
-					if ($_GET['export']) {
-						output_cell($rowspan, '-');
-						output_cell($rowspan, '-');
-					}
 					output_cell($rowspan, 'Geen positie');
 				} else {
 					$url = "http://www.openstreetmap.org/?mlat=" . $row['latitude'] . "&amp;mlon=" . $row['longitude'];
-					if ($_GET['export']) {
-						output_cell($rowspan, $row["latitude"]);
-						output_cell($rowspan, $row["longitude"]);
-					} else {
-						output_cell($rowspan, "<a href=\"" . $url . "\">" . $row["latitude"] . " / " . $row["longitude"] . "</a>");
-					}
+					output_cell($rowspan, "<a href=\"" . $url . "\">" . $row["latitude"] . " / " . $row["longitude"] . "</a>");
 				}
 				if (array_key_exists('counter', $message)) {
 					output_cell($rowspan, $message['counter']);
@@ -186,37 +141,30 @@
 				//echo("  <td colspan=\"6\"></td>");
 			}
 
-			if (!$_GET['export']) {
-				if (empty($gwdata)) {
-					echo("  <td colspan=\"4\">Niet beschikbaar</a>");
-				} else {
-					$gw = $gwdata['gtw_id'];
-
-					if (array_key_exists($gw, $gateway_descriptions))
-						$gw .= "<br/>" . $gateway_descriptions[$gw];
-
-					if ($gwdata['latitude'] && $gwdata['longitude']) {
-						$url = "http://www.openstreetmap.org/?mlat=" . $gwdata['latitude'] . "&amp;mlon=" . $gwdata['longitude'];
-						echo("  <td><a href=\"" . $url . "\">" . $gw . "</a></td>\n");
-					} else {
-						echo("  <td>" . $gw . "</td>\n");
-					}
-					echo("  <td>" . $gwdata["rssi"] . "</td>\n");
-					echo("  <td>" . $gwdata["snr"] . "</td>\n");
-					echo("  <td>" . $metadata["frequency"] . "Mhz, " . $metadata["data_rate"] . ", " .$metadata["coding_rate"] . "CR</td>\n");
-				}
-				echo("</tr>\n");
+			if (empty($gwdata)) {
+				echo("  <td colspan=\"4\">Niet beschikbaar</a>");
 			} else {
-				if ($first)
-					echo("\n");
+				$gw = $gwdata['gtw_id'];
+
+				if (array_key_exists($gw, $gateway_descriptions))
+					$gw .= "<br/>" . $gateway_descriptions[$gw];
+
+				if ($gwdata['latitude'] && $gwdata['longitude']) {
+					$url = "http://www.openstreetmap.org/?mlat=" . $gwdata['latitude'] . "&amp;mlon=" . $gwdata['longitude'];
+					echo("  <td><a href=\"" . $url . "\">" . $gw . "</a></td>\n");
+				} else {
+					echo("  <td>" . $gw . "</td>\n");
+				}
+				echo("  <td>" . $gwdata["rssi"] . "</td>\n");
+				echo("  <td>" . $gwdata["snr"] . "</td>\n");
+				echo("  <td>" . $metadata["frequency"] . "Mhz, " . $metadata["data_rate"] . ", " .$metadata["coding_rate"] . "CR</td>\n");
 			}
+			echo("</tr>\n");
 			$first = false;
 		}
 	}
-	if (!$_GET['export']) { ?>
+	?>
 		</table>
-		<p><a href="?<?=$_SERVER['QUERY_STRING']?>&amp;export=1">export met punten</a></p>
-		<p><a href="?<?=$_SERVER['QUERY_STRING']?>&amp;export=1&amp;comma_decimal=1">export met komma's</a></p>
 		<p>Totaal: <?= count($count_per_station)?> meetstations</p>
 		<table border="1">
 		<tr><th>Station</th><th>Aantal berichten hierboven</th></tr>
@@ -229,4 +177,3 @@
 		</table>
 	</body>
 </html>
-<?php   } ?>
