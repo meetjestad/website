@@ -114,7 +114,18 @@
 				];
 			}
 
-			$gateways = $metadata['gateways'];
+
+			if (array_key_exists('gateway', $_GET)) {
+				$gateways = [];
+				foreach ($metadata['gateways'] as $gwdata) {
+					if ($gwdata['gtw_id'] == $_GET['gateway']) {
+						$gateways = [$gwdata];
+						break;
+					}
+				}
+			} else {
+				$gateways = $metadata['gateways'];
+			}
 			$rowspan = count($gateways);
 
 			// Sort by LSR, descending
@@ -125,6 +136,9 @@
 			$gateways = [[]];
 			$rowspan = 1;
 		}
+
+		if (!$rowspan)
+			continue;
 
 		if (array_key_exists($row['station_id'], $count_per_station))
 			$count_per_station[$row['station_id']]++;
