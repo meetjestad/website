@@ -1,4 +1,33 @@
 <?
+	/**
+	 * Taken from https://stackoverflow.com/a/10054282/740048
+	 *
+	 * Calculates the great-circle distance between two points, with
+	 * the Haversine formula.
+	 * @param float $latitudeFrom Latitude of start point in [deg decimal]
+	 * @param float $longitudeFrom Longitude of start point in [deg decimal]
+	 * @param float $latitudeTo Latitude of target point in [deg decimal]
+	 * @param float $longitudeTo Longitude of target point in [deg decimal]
+	 * @param float $earthRadius Mean earth radius in [m]
+	 * @return float Distance between points in [m] (same as earthRadius)
+	 */
+	function haversineGreatCircleDistance(
+	  $latitudeFrom, $longitudeFrom, $latitudeTo, $longitudeTo, $earthRadius = 6371000)
+	{
+	  // convert from degrees to radians
+	  $latFrom = deg2rad($latitudeFrom);
+	  $lonFrom = deg2rad($longitudeFrom);
+	  $latTo = deg2rad($latitudeTo);
+	  $lonTo = deg2rad($longitudeTo);
+
+	  $latDelta = $latTo - $latFrom;
+	  $lonDelta = $lonTo - $lonFrom;
+
+	  $angle = 2 * asin(sqrt(pow(sin($latDelta / 2), 2) +
+	    cos($latFrom) * cos($latTo) * pow(sin($lonDelta / 2), 2)));
+	  return $angle * $earthRadius;
+	}
+
 	header('Content-Type: text/html; charset=utf-8');
 ?>
 <!DOCTYPE html>
@@ -18,6 +47,7 @@
 				<th>Positie</th>
 				<th>Fcnt</th>
 				<th>Gateways</th>
+				<th>Afstand</th>
 				<th>RSSI</th>
 				<th>LSNR</th>
 				<th>Radiogegevens</th>
@@ -148,6 +178,11 @@
 
 				if (array_key_exists($gw, $gateway_descriptions))
 					$gw .= "<br/>" . $gateway_descriptions[$gw];
+				
+				$distance = false;
+				if ($row['latitude'] && $gwdata['latitude']) {
+					$distance = haversineGreatCircleDistance($row['latitude'], $row['longitude'], $gwdata['latitude'], $gwdata['longitude']);
+				}
 
 				if ($gwdata['latitude'] && $gwdata['longitude']) {
 					$url = "http://www.openstreetmap.org/?mlat=" . $gwdata['latitude'] . "&amp;mlon=" . $gwdata['longitude'];
@@ -155,6 +190,10 @@
 				} else {
 					echo("  <td>" . $gw . "</td>\n");
 				}
+				if ($distance)
+					echo("  <td>" . round($distance / 1000, 3) . "km</td>\n");
+				else
+					echo("  <td>-</td>\n");
 				echo("  <td>" . $gwdata["rssi"] . "</td>\n");
 				echo("  <td>" . $gwdata["snr"] . "</td>\n");
 				echo("  <td>" . $metadata["frequency"] . "Mhz, " . $metadata["data_rate"] . ", " .$metadata["coding_rate"] . "CR</td>\n");
