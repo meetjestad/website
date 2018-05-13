@@ -86,6 +86,10 @@
 	$result = $database->query("SELECT msr.*, msg.message FROM sensors_measurement AS msr LEFT JOIN sensors_message AS msg ON (msg.id = msr.message_id) $WHERE ORDER BY msr.timestamp DESC LIMIT $limit");
 	print($database->error);
 	$count_per_station = array();
+	$stations_per_gateway = array();
+	$messagecount_per_gateway = array();
+	$distances_per_gateway = array();
+	$messagecount = 0;
 
 	function output_cell($rowspan, $data) {
 		echo("  <td rowspan=\"$rowspan\"> " . $data . "</td>\n");
@@ -140,6 +144,8 @@
 		if (!$rowspan)
 			continue;
 
+		$messagecount++;
+
 		if (array_key_exists($row['station_id'], $count_per_station))
 			$count_per_station[$row['station_id']]++;
 		else
@@ -188,10 +194,12 @@
 			if (empty($gwdata)) {
 				echo("  <td colspan=\"4\">Niet beschikbaar</a>");
 			} else {
-				$gw = $gwdata['gtw_id'];
+				$gw_id = $gwdata['gtw_id'];
 
-				if (array_key_exists($gw, $gateway_descriptions))
-					$gw .= "<br/>" . $gateway_descriptions[$gw];
+				if (array_key_exists($gw_id, $gateway_descriptions))
+					$gw = $gateway_descriptions[$gw_id];
+				else
+					$gw = $gw_id;
 				
 				$distance = false;
 				if ($row['latitude'] && $gwdata['latitude']) {
@@ -211,6 +219,16 @@
 				echo("  <td>" . $gwdata["rssi"] . "</td>\n");
 				echo("  <td>" . $gwdata["snr"] . "</td>\n");
 				echo("  <td>" . $metadata["frequency"] . "Mhz, " . $metadata["data_rate"] . ", " .$metadata["coding_rate"] . "CR</td>\n");
+
+				if (!array_key_exists($gw_id, $stations_per_gateway)) {
+					$stations_per_gateway[$gw_id] = array();
+					$messagecount_per_gateway[$gw_id] = 0;
+					$distances_per_gateway[$gw_id] = array();
+				}
+				$stations_per_gateway[$gw_id][$row['station_id']] = true;
+				$messagecount_per_gateway[$gw_id]++;
+				if ($distance)
+					$distances_per_gateway[$gw_id][$row['station_id']] = $distance;
 			}
 			echo("</tr>\n");
 			$first = false;
@@ -218,13 +236,52 @@
 	}
 	?>
 		</table>
-		<p>Totaal: <?= count($count_per_station)?> meetstations</p>
+		<p>Totaal aantal berichten: <?= $messagecount ?></p>
+		<p>Totaal aantal meetstations: <?= count($count_per_station)?></p>
+		<p><b>Berichten per meetstation</b></p>
 		<table border="1">
-		<tr><th>Station</th><th>Aantal berichten hierboven</th></tr>
+		<tr><th>Aantal berichten hierboven</th><th>Meetstations</th></tr>
 		<?php
-			ksort($count_per_station);
 			foreach($count_per_station as $station => $count) {
-				echo("<tr><td>$station</td><td>$count</td></tr>\n");
+				if (!array_key_exists($count, $stations_per_count))
+					$stations_per_count[$count] = array();
+
+				$stations_per_count[$count][] = $station;
+			}
+			ksort($stations_per_count);
+			foreach($stations_per_count as $count => $stations) {
+				$stationlist = implode(", ", $stations);
+				echo("<tr><td>$count</td><td>$stationlist</td></tr>\n");
+			}
+		?>
+		</table>
+
+		<p><b>Statistieken per gateway</b></p>
+		<table border="1">
+		<tr><th>Gateway</th><th>Aantal berichten</th><th>Aantal meetstations</th><th>Meetstations</th></tr>
+		<?php
+			arsort($messagecount_per_gateway);
+			foreach($messagecount_per_gateway as $gw_id => $messagecount) {
+				if (array_key_exists($gw_id, $gateway_descriptions))
+					$gw = $gateway_descriptions[$gw_id];
+				else
+					$gw = $gw_id;
+
+				$stations = array_keys($stations_per_gateway[$gw_id]);
+				$stationlist = '';
+				foreach ($stations as $station) {
+					if ($stationlist)
+						$stationlist .= ', ';
+					$url = '?sensor=' . $station;
+					$stationlist .= "<a href=\"$url\">" . htmlspecialchars($station) . "</a>";
+					if (array_key_exists($station, $distances_per_gateway[$gw_id])) {
+						$distance = $distances_per_gateway[$gw_id][$station];
+						$stationlist .= ' (' . round($distance / 1000, 3) . 'km)';
+					}
+				}
+				$stationcount = count($stations);
+				$url = '?gateway=' . htmlspecialchars($gw_id);
+				echo("<tr><td>$gw (<a href=\"$url\">filter</a>)</td><td>$messagecount</td><td>$stationcount</td><td>$stationlist</td></tr>\n");
 			}
 		?>
 		</table>
