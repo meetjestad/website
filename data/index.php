@@ -38,6 +38,17 @@
 		echo $output;
 	}
 	
+//	echo $_GET['cmd'];
+//	exit;
+	if (isset($_GET['cmd'])) switch ($_GET['cmd']) {
+		case 'download CSV':
+			$format = 'csv';
+			break;
+		case 'download JSON':
+			$format = 'json';
+			break;
+	}
+	
 	// query: ?type=sensors|observations|stories&start=timestamp&end=timestamp&ids=1,2-4
 	if (isset($_GET['type'])) {
 		$start = (isset($_GET['start']) && $_GET['start']) ? urldecode($_GET['start']) : false;
@@ -214,14 +225,13 @@
 				<input type="text" name="ids" id="idlist" placeholder="2,5,19-23" style="width:330px; margin-top:5px;"/>
 			</fieldset>
 			
-			<h3>3. Kies bestandsformaat</h3>
-			<select name="format">
-				<option id="xml" value="csv">CSV</option>
-				<option id="json" value="json">JSON</option>
-			</select>
-			<input type="checkbox" name="comma"/>Gebruik komma ipv punt voor decimalen<br/>
-			<h3>4. Download</h3>
-			<input type="submit" value="download"/>
+			<h3>3. Download data of maak kaart</h3>
+			<fieldset id="data">
+				<legend>Data</legend>
+				<input type="checkbox" name="comma"/>Gebruik komma ipv punt voor decimalen<br/>
+				<input type="submit" name="cmd" value="download CSV"/>
+				<input type="submit" name="cmd" value="download JSON"/>
+			</fieldset>
 		</form>
 		<script>
 		var startDate,
