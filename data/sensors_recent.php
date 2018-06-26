@@ -29,6 +29,9 @@
 	}
 
 	header('Content-Type: text/html; charset=utf-8');
+
+	if (file_exists('sensorsets.json')) $sensorsets = json_decode(file_get_contents('sensorsets.json'), true);
+	else $sensorsets = array();
 ?>
 <!DOCTYPE html>
 <html class="no-js">
@@ -292,5 +295,11 @@
 			}
 		?>
 		</table>
+		<p><b>Filter op dataset</b></p>
+		<ul>
+		<?php foreach ($sensorsets as $id => $set) { ?>
+			<li><a href="?sensors=<?= htmlspecialchars($set['ids'])?>"><?=htmlspecialchars($set['description'])?></a></li>
+		<?php } ?>
+		</ul>
 	</body>
 </html>
