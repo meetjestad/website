@@ -63,9 +63,16 @@
 	else
 		$limit = 200;
 
-	if (isset($_GET['sensor'])) {
-		$sensor = (int)$_GET['sensor'];
-		$WHERE = "WHERE msr.station_id = $sensor";
+	// Compatibility with existing links
+	if (isset($_GET['sensor']))
+		$_GET['sensors'] = $_GET['sensor'];
+
+	if (isset($_GET['sensors'])) {
+		$sensors = explode(',', $_GET['sensors']);
+		foreach ($sensors as &$id)
+			$id = (int)$id;
+		$sensors = implode(',', $sensors);
+		$WHERE = "WHERE msr.station_id IN ($sensors)";
 	} else {
 		$WHERE = "";
 	}
@@ -156,7 +163,7 @@
 			echo("<tr>\n");
 			if ($first) {
 
-				$url = '?sensor=' . $row["station_id"] . '&amp;limit=50';
+				$url = '?sensors=' . $row["station_id"] . '&amp;limit=50';
 
 				output_cell($rowspan, "<a href=\"" . $url . "\">" . $row["station_id"] . "</a>");
 
@@ -272,7 +279,7 @@
 				foreach ($stations as $station) {
 					if ($stationlist)
 						$stationlist .= ', ';
-					$url = '?sensor=' . $station;
+					$url = '?sensors=' . $station;
 					$stationlist .= "<a href=\"$url\">" . htmlspecialchars($station) . "</a>";
 					if (array_key_exists($station, $distances_per_gateway[$gw_id])) {
 						$distance = $distances_per_gateway[$gw_id][$station];
