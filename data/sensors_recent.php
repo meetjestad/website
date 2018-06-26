@@ -69,6 +69,8 @@
 	// Compatibility with existing links
 	if (isset($_GET['sensor']))
 		$_GET['sensors'] = $_GET['sensor'];
+	if (isset($_GET['gateway']))
+		$_GET['gateways'] = $_GET['gateway'];
 
 	if (isset($_GET['sensors'])) {
 		$sensors = explode(',', $_GET['sensors']);
@@ -79,6 +81,14 @@
 	} else {
 		$WHERE = "";
 	}
+
+	$gateways_filter = false;
+	if (isset($_GET['gateways']))
+		$gateways_filter = explode(',', $_GET['gateways']);
+
+	$show_other_gateways = false;
+	if (isset($_GET['show_other_gateways']))
+		$show_other_gateways = (bool)$_GET['show_other_gateways'];
 
 	$gateway_descriptions = [
 		"eui-1dee0b64b020eec4" => "Meetjestad #1 (De WAR)",
@@ -129,16 +139,22 @@
 			}
 
 
-			if (array_key_exists('gateway', $_GET)) {
+			$gateways = $metadata['gateways'];
+			if ($gateways_filter) {
 				$gateways = [];
 				foreach ($metadata['gateways'] as $gwdata) {
-					if ($gwdata['gtw_id'] == $_GET['gateway']) {
-						$gateways = [$gwdata];
-						break;
+					if (in_array($gwdata['gtw_id'], $gateways_filter)) {
+						$found = true;
+						if (!$show_other_gateways) {
+							$gateways[] = $gwdata;
+						} else {
+							$gateways = $metadata['gateways'];
+							break;
+						}
 					}
 				}
-			} else {
-				$gateways = $metadata['gateways'];
+				if (!$gateways)
+					continue;
 			}
 			$rowspan = count($gateways);
 
@@ -150,9 +166,6 @@
 			$gateways = [[]];
 			$rowspan = 1;
 		}
-
-		if (!$rowspan)
-			continue;
 
 		$messagecount++;
 
@@ -290,7 +303,7 @@
 					}
 				}
 				$stationcount = count($stations);
-				$url = '?gateway=' . htmlspecialchars($gw_id);
+				$url = '?gateways=' . htmlspecialchars($gw_id) . '&show_other_gateways=1';
 				echo("<tr><td>$gw (<a href=\"$url\">filter</a>)</td><td>$messagecount</td><td>$stationcount</td><td>$stationlist</td></tr>\n");
 			}
 		?>
