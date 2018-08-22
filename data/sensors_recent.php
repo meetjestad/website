@@ -42,18 +42,18 @@
 		<table border="1">
 			<tr>
 				<th>ID</th>
-				<th>Tijd</th>
+				<th>Time</th>
 				<th>Temp</th>
-				<th>Luchtvocht</th>
-				<th>Spanning</th>
+				<th>Humidity</th>
+				<th>Voltage</th>
 				<th>Firmware</th>
-				<th>Positie</th>
+				<th>Position</th>
 				<th>Fcnt</th>
 				<th>Gateways</th>
-				<th>Afstand</th>
+				<th>Distance</th>
 				<th>RSSI</th>
 				<th>LSNR</th>
-				<th>Radiogegevens</th>
+				<th>Radiosettings</th>
 			</tr>
 <?php
 	// connect to database
@@ -200,7 +200,7 @@
 				else
 					output_cell($rowspan, 'v' . $row['firmware_version']);
 				if ($row['latitude'] == '0.0' && $row['longitude'] == '0.0') {
-					output_cell($rowspan, 'Geen positie');
+					output_cell($rowspan, 'No position');
 				} else {
 					$url = "http://www.openstreetmap.org/?mlat=" . $row['latitude'] . "&amp;mlon=" . $row['longitude'];
 					output_cell($rowspan, "<a href=\"" . $url . "\">" . $row["latitude"] . " / " . $row["longitude"] . "</a>");
@@ -259,9 +259,9 @@
 	}
 	?>
 		</table>
-		<p>Totaal aantal berichten: <?= $messagecount ?></p>
-		<p>Totaal aantal meetstations: <?= count($count_per_station)?></p>
-		<p><b>Berichten per meetstation</b></p>
+		<p>Message count: <?= $messagecount ?></p>
+		<p>Node count: <?= count($count_per_station)?></p>
+		<p><b>Messages per node</b></p>
 		<table border="1">
 		<tr><th>Aantal berichten hierboven</th><th>Meetstations</th></tr>
 		<?php
@@ -279,9 +279,9 @@
 		?>
 		</table>
 
-		<p><b>Statistieken per gateway</b></p>
+		<p><b>Statistics per gateway</b></p>
 		<table border="1">
-		<tr><th>Gateway</th><th>Aantal berichten</th><th>Aantal meetstations</th><th>Meetstations</th></tr>
+		<tr><th>Gateway</th><th>Number of messages</th><th>Number of nodes</th><th>Nodes</th></tr>
 		<?php
 			arsort($messagecount_per_gateway);
 			foreach($messagecount_per_gateway as $gw_id => $messagecount) {
@@ -308,7 +308,7 @@
 			}
 		?>
 		</table>
-		<p><b>Filter op dataset</b></p>
+		<p><b>Filter by dataset</b></p>
 		<ul>
 		<?php foreach ($sensorsets as $id => $set) { ?>
 			<li><a href="?sensors=<?= htmlspecialchars($set['ids'])?>"><?=htmlspecialchars($set['description'])?></a></li>
