@@ -97,7 +97,7 @@
 				if ($ids) $WHERE.= ($WHERE?" AND ":" WHERE ")."station_id IN ($ids)";
 				$SORT = ' ORDER BY timestamp ASC';
 				$query = "SELECT * FROM sensors_measurement".$WHERE.$SORT;
-				$results = $database->query($query) or die(mysqli_error($database)); ;
+				$results = $database->query($query, MYSQLI_USE_RESULT) or die(mysqli_error($database)); ;
 				//~ echo 'hop';
 				//~ exit;
 				
@@ -117,7 +117,7 @@
 				if ($end) $WHERE.= ($WHERE?" AND ":" WHERE ")."datum <= '$end'";
 				
 				$query = "SELECT soort_id,waarneming_id,datum,locatie,omschrijving FROM flora_observaties".$WHERE;
-				$results = $database->query($query);
+				$results = $database->query($query, MYSQLI_USE_RESULT);
 				
 				echoTableRow(array("datum", "longitude", "latitude", "soort_nl", "soort_la", "waarneming", "notitie"));
 				
