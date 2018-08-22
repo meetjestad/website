@@ -45,6 +45,7 @@
 				<th>Time</th>
 				<th>Temp</th>
 				<th>Humidity</th>
+				<th>Light</th>
 				<th>Voltage</th>
 				<th>Firmware</th>
 				<th>Position</th>
@@ -188,6 +189,7 @@
 				output_cell($rowspan, $datetime->format('Y-m-d H:i:s'));
 				output_cell($rowspan, $row["temperature"] . "°C");
 				output_cell($rowspan, $row["humidity"] . "%");
+				output_cell($rowspan, $row["lux"] . ($row["lux"]>0?" lux":""));
 				if ($row['battery'] && $row['supply']) {
 					output_cell($rowspan, round($row["battery"],2) . "V / " . round($row['supply'],2) . "V");
 				} else if ($row['supply']) {
