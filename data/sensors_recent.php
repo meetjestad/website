@@ -1,4 +1,4 @@
-<?
+<?php
 	/**
 	 * Taken from https://stackoverflow.com/a/10054282/740048
 	 *
