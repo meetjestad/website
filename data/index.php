@@ -33,6 +33,7 @@
 		static $rows = 0;
 		static $cols = 0;
 		static $fieldNames = array();
+		$rowCount = 0;
 		
 		if ($rowCount == 0) {
 			$fieldNames = $data;

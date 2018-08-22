@@ -227,11 +227,11 @@
 					$gw = $gw_id;
 				
 				$distance = false;
-				if ($row['latitude'] && $gwdata['latitude']) {
+				if ($row['latitude'] && array_key_exists('latitude', $gwdata) && $gwdata['latitude']) {
 					$distance = haversineGreatCircleDistance($row['latitude'], $row['longitude'], $gwdata['latitude'], $gwdata['longitude']);
 				}
 
-				if ($gwdata['latitude'] && $gwdata['longitude']) {
+				if (array_key_exists('latitude', $gwdata) && $gwdata['latitude'] && array_key_exists('longitude', $gwdata) && $gwdata['longitude']) {
 					$url = "http://www.openstreetmap.org/?mlat=" . $gwdata['latitude'] . "&amp;mlon=" . $gwdata['longitude'];
 					echo("  <td><a href=\"" . $url . "\">" . $gw . "</a></td>\n");
 				} else {
@@ -265,7 +265,7 @@
 		<p>Node count: <?= count($count_per_station)?></p>
 		<p><b>Messages per node</b></p>
 		<table border="1">
-		<tr><th>Aantal berichten hierboven</th><th>Meetstations</th></tr>
+		<tr><th>Number of messages in list above</th><th>Nodes</th></tr>
 		<?php
 			$stations_per_count = array();
 			foreach($count_per_station as $station => $count) {
