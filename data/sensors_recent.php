@@ -267,6 +267,7 @@
 		<table border="1">
 		<tr><th>Aantal berichten hierboven</th><th>Meetstations</th></tr>
 		<?php
+			$stations_per_count = array();
 			foreach($count_per_station as $station => $count) {
 				if (!array_key_exists($count, $stations_per_count))
 					$stations_per_count[$count] = array();
