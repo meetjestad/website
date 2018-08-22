@@ -1,5 +1,35 @@
 <?php
+	error_reporting(E_ALL);
+	
+	$type = isset($_GET['type']) ? $_GET['type'] : false;
+	$comma = isset($_GET['comma']) ? true : false;
+	
+	$start = (isset($_GET['start']) && $_GET['start']) ? urldecode($_GET['start']) : false;
+	$end = (isset($_GET['end']) && $_GET['end']) ? urldecode($_GET['end']) : false;
+	
+	if(isset($_GET['ids']) && $_GET['ids']) {
+		$ids = preg_replace_callback('/(\d+)-(\d+)/', function($m) {
+			return implode(',', range($m[1], $m[2]));
+		}, urldecode($_GET['ids']));
+	}
+	else $ids = false;
+	
+	$format = isset($_GET['format']) ? $_GET['format'] : '';
+	if (isset($_GET['cmd'])) switch ($_GET['cmd']) {
+		case 'toon hittekaart':
+			header('Location: http://meetjestad.net?layer=hittekaart&ids='.$ids.'&start='.$start.'&end='.$end);
+			exit;
+		case 'download CSV':
+			$format = 'csv';
+			break;
+		case 'download JSON':
+			$format = 'json';
+			break;
+	}
+	
 	function echoTableRow($data) {
+		global $format;
+		global $comma;
 		static $rows = 0;
 		static $cols = 0;
 		static $fieldNames = array();
@@ -10,7 +40,7 @@
 		}
 		
 		$output = "";
-		switch($_GET['format']) {
+		switch($format) {
 			case 'json':
 				if ($rows>0) {
 					if ($rows>1) $output.= ",";
@@ -25,7 +55,7 @@
 				break;
 		}
 		$rows++;
-		if (isset($_GET['comma']) && $_GET['comma']) {
+		if ($comma) {
 			// https://stackoverflow.com/questions/2293780/how-to-detect-a-floating-point-number-using-a-regular-expression#2293793
 			$output = preg_replace_callback(
 				'/(([1-9][0-9]*\.?[0-9]*)|(\.[0-9]+))([Ee][+-]?[0-9]+)?/',
@@ -38,35 +68,25 @@
 		echo $output;
 	}
 	
-//	echo $_GET['cmd'];
-//	exit;
-	if (isset($_GET['cmd'])) switch ($_GET['cmd']) {
-		case 'download CSV':
-			$format = 'csv';
-			break;
-		case 'download JSON':
-			$format = 'json';
-			break;
-	}
-	
 	// query: ?type=sensors|observations|stories&start=timestamp&end=timestamp&ids=1,2-4
-	if (isset($_GET['type'])) {
-		$start = (isset($_GET['start']) && $_GET['start']) ? urldecode($_GET['start']) : false;
-		$end = (isset($_GET['end']) && $_GET['end']) ? urldecode($_GET['end']) : false;
-		
-		if(isset($_GET['ids']) && $_GET['ids']) {
-			$ids = preg_replace_callback('/(\d+)-(\d+)/', function($m) {
-				return implode(',', range($m[1], $m[2]));
-			}, urldecode($_GET['ids']));
-		}
-		else $ids = false;
+	if ($type) {
+		set_time_limit(0);                   // ignore php timeout
+		ob_start();
 		
 		// output headers
-		header('Content-Type: application/json; charset=UTF-8');
-		header('Content-Disposition: attachment; filename="MjS-data.'.$_GET['format'].'"');
-		if ($_GET['type']!='stories' && $_GET['format']=='json') echo '[';
+		switch($format) {
+			case 'csv':
+				header('Content-Type: text/csv; charset=UTF-8');
+				break;
+			case 'json':
+				header('Content-Type: application/json; charset=UTF-8');
+				break;
+		}
+		header('Content-Disposition: attachment; filename="MjS-data.'.$format.'"');
 		
-		switch($_GET['type']) {
+		if ($type!='stories' && $format=='json') echo '[';
+		
+		switch($type) {
 			case 'sensors':
 				include ("../connect.php");
 				$database = Connection();
@@ -74,13 +94,18 @@
 				if ($start) $WHERE.= " WHERE timestamp >= '$start'";
 				if ($end) $WHERE.= ($WHERE?" AND ":" WHERE ")."timestamp <= '$end'";
 				if ($ids) $WHERE.= ($WHERE?" AND ":" WHERE ")."station_id IN ($ids)";
-				$query = "SELECT * FROM sensors_measurement".$WHERE;
-				$results = $database->query($query);
+				$SORT = ' ORDER BY timestamp ASC';
+				$query = "SELECT * FROM sensors_measurement".$WHERE.$SORT;
+				$results = $database->query($query) or die(mysqli_error($database)); ;
+				//~ echo 'hop';
+				//~ exit;
 				
-				echoTableRow(array("id", "timestamp", "longitude", "latitude", "temperature", "humidity", "supply"));
+				echoTableRow(array("id", "timestamp", "longitude", "latitude", "temperature", "humidity", "lux", "supply"));
 
 				while(($result = $results->fetch_array(MYSQLI_ASSOC)) != false) {
-					echoTableRow(array($result["station_id"], $result["timestamp"], $result["longitude"], $result["latitude"], $result["temperature"], $result["humidity"], $result["supply"]));
+					echoTableRow(array($result["station_id"], $result["timestamp"], $result["longitude"], $result["latitude"], $result["temperature"], $result["humidity"], $result["lux"], $result["supply"]));
+					ob_flush();
+					flush();
 				}
 				break;
 			case 'observations':
@@ -121,7 +146,7 @@
 				break;
 		}
 		
-		if ($_GET['type']!='stories' && $_GET['format']=='json') echo ']';
+		if ($type!='stories' && $format=='json') echo ']';
 		exit;
 	}
 	
@@ -198,8 +223,8 @@
 <!--
 			<h3>2. Kies experiment</h3>
 			IF Sensoren:<br/>
-			-Meet je stad klimaat<br/>
-			-Meet je stad cityslam op datum ...<br/>
+			-klimaat<br/>
+			-cityslam op datum ...<br/>
 			-NO2<br/>
 			-fijnstof<br/>
 			IF Observaties:<br/>
@@ -231,6 +256,10 @@
 				<input type="checkbox" name="comma"/>Gebruik komma ipv punt voor decimalen<br/>
 				<input type="submit" name="cmd" value="download CSV"/>
 				<input type="submit" name="cmd" value="download JSON"/>
+			</fieldset>
+			<fieldset id="map">
+				<legend>Kaart</legend>
+				<input type="submit" name="cmd" value="toon hittekaart"/>
 			</fieldset>
 		</form>
 		<script>
