@@ -56,14 +56,23 @@
 			foreach ($calibrate["cluster"] as $id) $Tavg+= $list[$id]["temp"];
 			$Tavg/= count($calibrate["cluster"]) + 1;
 
-			// calculate temperature offset per sensor
-			$Toff[$calibrate["sensor"]] = $calibrate["temp"] - $Tavg;
-			if (isset($ToffN[$calibrate["sensor"]])) $ToffN[$calibrate["sensor"]]++;
-			else $ToffN[$calibrate["sensor"]] = 0;
+			// store temperature offset per sensor
+			if (!isset($ToffN[$calibrate["sensor"]])) {
+				$ToffN[$calibrate["sensor"]] = 0;
+				$Toff[$calibrate["sensor"]] = 0;
+			}
+			$Toff[$calibrate["sensor"]] += $calibrate["temp"] - $Tavg;
+			$ToffN[$calibrate["sensor"]]++;
+
 			foreach ($calibrate["cluster"] as $id) {
-				$Toff[$list[$id]["sensor"]] = $Tavg - $list[$id]["temp"];
-				if (isset($ToffN[$list[$id]["sensor"]])) $ToffN[$list[$id]["sensor"]]++;
-				else $ToffN[$list[$id]["sensor"]] = 0;
+				$data = $list[$id];
+
+				if (!isset($ToffN[$data["sensor"]])) {
+					$ToffN[$data["sensor"]] = 0;
+					$Toff[$data["sensor"]] = 0;
+				}
+				$Toff[$data["sensor"]] += $data["temp"] - $Tavg;
+				$ToffN[$data["sensor"]]++;
 			}
 		}
 		foreach($Toff as $id => $val) $Toff[$id]/= $ToffN[$id];
