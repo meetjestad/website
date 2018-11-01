@@ -104,6 +104,14 @@
 				echoTableRow(array("id", "timestamp", "longitude", "latitude", "temperature", "humidity", "lux", "supply"));
 
 				while(($result = $results->fetch_array(MYSQLI_ASSOC)) != false) {
+					// No valid position is encoded in the
+					// database as 0,0, but readers of the
+					// data (such as QGIS) take these as
+					// literal coordinates.
+					if ($result['latitude'] == 0)
+						$result['latitude'] = '';
+					if ($result['longitude'] == 0)
+						$result['longitude'] = '';
 					echoTableRow(array($result["station_id"], $result["timestamp"], $result["longitude"], $result["latitude"], $result["temperature"], $result["humidity"], $result["lux"], $result["supply"]));
 					ob_flush();
 					flush();
