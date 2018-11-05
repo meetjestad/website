@@ -4,7 +4,9 @@
 	$type = isset($_GET['type']) ? $_GET['type'] : false;
 	$comma = isset($_GET['comma']) ? true : false;
 	
-	$start = (isset($_GET['start']) && $_GET['start']) ? urldecode($_GET['start']) : false;
+	if (isset($_GET['start']) && $_GET['start']) $start = urldecode($_GET['start']);
+	else if (isset($_GET['begin']) && $_GET['begin']) $start = urldecode($_GET['begin']);
+	else $start = false;
 	$end = (isset($_GET['end']) && $_GET['end']) ? urldecode($_GET['end']) : false;
 	
 	if(isset($_GET['ids']) && $_GET['ids']) {
