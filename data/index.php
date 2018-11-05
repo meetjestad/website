@@ -18,7 +18,7 @@
 	
 	$format = isset($_GET['format']) ? $_GET['format'] : '';
 	if (isset($_GET['cmd'])) switch ($_GET['cmd']) {
-		case 'toon hittekaart':
+		case 'show heatmap':
 			header('Location: http://meetjestad.net?layer=hittekaart&ids='.$ids.'&start='.$start.'&end='.$end);
 			exit;
 		case 'download CSV':
@@ -225,11 +225,11 @@
 	<body>
 		<form method="get" target="_blank">
 			<img id="logo" src="../images/logo_dataloket.png"><br/>
-			Alle data van Meet je stad zijn beschikbaar als <a href="https://opendatacommons.org/licenses/odbl/summary/">open data</a>.<br/> Het gebruik van de gegevens of interpretaties daarvan is voor eigen risico.<br/> Lees hier de licenties voor respectievelijk de <a href="http://opendatacommons.org/licenses/odbl/1.0/">database</a> en de <a href="http://opendatacommons.org/licenses/dbcl/1.0/">gegevens</a> daarin.
-			<h3>1. Kies soort data</h3>
-			<input type="radio" name="type" value="sensors" onclick="document.getElementById('sensors').style.display='block'; document.getElementById('xml').style.display='block';" checked="checked"/> Metingen
-			<input type="radio" name="type" value="observations" onclick="document.getElementById('sensors').style.display='none'; document.getElementById('xml').style.display='block';"/> Observaties
-			<input type="radio" name="type" value="stories" onclick="document.getElementById('sensors').style.display='none'; document.getElementById('xml').style.display='none'; document.getElementById('json').selected='selected';"/> Verhalen
+			All data from Meet je stad is made available as <a href="https://opendatacommons.org/licenses/odbl/summary/">open data</a>.<br/> Using the data or interpretations thereof is at ones own risk.<br/> For more information, read the licenses for the <a href="http://opendatacommons.org/licenses/odbl/1.0/">database</a> and its <a href="http://opendatacommons.org/licenses/dbcl/1.0/">content</a>.
+			<h3>1. Choose data type</h3>
+			<input type="radio" name="type" value="sensors" onclick="document.getElementById('sensors').style.display='block'; document.getElementById('xml').style.display='block';" checked="checked"/> Measurements
+			<input type="radio" name="type" value="observations" onclick="document.getElementById('sensors').style.display='none'; document.getElementById('xml').style.display='block';"/> Observations
+			<input type="radio" name="type" value="stories" onclick="document.getElementById('sensors').style.display='none'; document.getElementById('xml').style.display='none'; document.getElementById('json').selected='selected';"/> Stories
 			
 <!--
 			<h3>2. Kies experiment</h3>
@@ -244,16 +244,16 @@
 			
 			<h3>3. Maak selectie (optioneel)</h3>
 -->
-			<h3>2. Maak selectie (optioneel)</h3>
+			<h3>2. Apply filter (optional)</h3>
 			<fieldset>
-				<legend>Periode</legend>
-				van <input type="text" name="start" id="start" placeholder="2016-12-31,12:00" style="width:100px;"/> tot <input type="text" name="end" id="end" placeholder="2017-01-01,12:00" style="width:100px;"/>
+				<legend>Period</legend>
+				from <input type="text" name="start" id="start" placeholder="2016-12-31,12:00" style="width:100px;"/> to <input type="text" name="end" id="end" placeholder="2017-01-01,12:00" style="width:100px;"/>
 			</fieldset>
 			<fieldset id="sensors">
-				<legend>Sensor(en)</legend>
-				geef één of meer id(s)...
+				<legend>Sensor(s)</legend>
+				enter one or more ids...
 				<select onchange="selectSet(this.value);">
-					<option selected="selected" disabled="disabled">...of kies een dataset</option>
+					<option selected="selected" disabled="disabled">...or choose a dataset</option>
 <?
 	foreach($sensorsets as $id => $set) echo '<option value="'.$id.'">'.$set['description'].'</option>';
 ?>
@@ -261,16 +261,16 @@
 				<input type="text" name="ids" id="idlist" placeholder="2,5,19-23" style="width:330px; margin-top:5px;"/>
 			</fieldset>
 			
-			<h3>3. Download data of maak kaart</h3>
+			<h3>3. Download data or generate map</h3>
 			<fieldset id="data">
 				<legend>Data</legend>
-				<input type="checkbox" name="comma"/>Gebruik komma ipv punt voor decimalen<br/>
+				<input type="checkbox" name="comma"/>Use comma as decimal separator<br/>
 				<input type="submit" name="cmd" value="download CSV"/>
 				<input type="submit" name="cmd" value="download JSON"/>
 			</fieldset>
 			<fieldset id="map">
-				<legend>Kaart</legend>
-				<input type="submit" name="cmd" value="toon hittekaart"/>
+				<legend>Map</legend>
+				<input type="submit" name="cmd" value="show heatmap"/>
 			</fieldset>
 		</form>
 		<script>
