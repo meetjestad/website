@@ -46,6 +46,8 @@
 				<th>Temp</th>
 				<th>Humidity</th>
 				<th>Light</th>
+				<th>PM2.5</th>
+				<th>PM10</th>
 				<th>Voltage</th>
 				<th>Firmware</th>
 				<th>Position</th>
@@ -187,6 +189,19 @@
 				output_cell($rowspan, $row["temperature"] . "°C");
 				output_cell($rowspan, $row["humidity"] . "%");
 				output_cell($rowspan, $row["lux"] . ($row["lux"]>0?" lux":""));
+				if ($row["pm2_5"] == 0xffff)
+					output_cell($rowspan, "read error");
+				else if ($row["pm2_5"])
+					output_cell($rowspan, $row["pm2_5"] . " μg/m³");
+				else
+					output_cell($rowspan, "");
+				if ($row["pm10"] == 0xffff)
+					output_cell($rowspan, "read error");
+				else if ($row["pm10"])
+					output_cell($rowspan, $row["pm10"] . " μg/m³");
+				else
+					output_cell($rowspan, "");
+
 				if ($row['battery'] && $row['supply']) {
 					output_cell($rowspan, round($row["battery"],2) . "V / " . round($row['supply'],2) . "V");
 				} else if ($row['supply']) {
