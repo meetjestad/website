@@ -93,12 +93,9 @@
 
 	$gateway_descriptions = [
 		"eui-1dee0b64b020eec4" => "Meetjestad #1 (De WAR)",
-		"eui-1dee17600247247a" => "Kroos & Co (Haaksbergen)",
-		//"eui-1dee02b9f726633e" => "Meetjestad #3",
 		"mjs-gateway-3" => "Meetjestad #3 (Berghotel)",
+		"mjs-gateway-6" => "Meetjestad #6 (La Balise)",
 		"eui-1dee1cc11cba7539" => "Meetjestad #4 (De Koperhorst)",
-		"eui-1dee18fc1c9d19d8" => "Meetjestad #5 (Berghotel)",
-		"eui-1dee190506f53367" => "Meetjestad #6",
 		"eui-0000024b080e020a" => "(NH Hotel Amersfoort)",
 		"eui-0000024b080602ed" => "(De Bilt)",
 		"eui-000078a504f5b057" => "(De Bilt)",
