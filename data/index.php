@@ -103,7 +103,7 @@
 				//~ echo 'hop';
 				//~ exit;
 				
-				echoTableRow(array("id", "timestamp", "longitude", "latitude", "temperature", "humidity", "lux", "supply"));
+				echoTableRow(array("id", "timestamp", "longitude", "latitude", "temperature", "humidity", "lux", "supply", "pm2.5", "pm10"));
 
 				while(($result = $results->fetch_array(MYSQLI_ASSOC)) != false) {
 					// No valid position is encoded in the
@@ -114,7 +114,7 @@
 						$result['latitude'] = '';
 					if ($result['longitude'] == 0)
 						$result['longitude'] = '';
-					echoTableRow(array($result["station_id"], $result["timestamp"], $result["longitude"], $result["latitude"], $result["temperature"], $result["humidity"], $result["lux"], $result["supply"]));
+					echoTableRow(array($result["station_id"], $result["timestamp"], $result["longitude"], $result["latitude"], $result["temperature"], $result["humidity"], $result["lux"], $result["supply"], $result["pm2_5"], $result["pm10"]));
 					ob_flush();
 					flush();
 				}
