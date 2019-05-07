@@ -95,9 +95,11 @@
 
 	$gateway_descriptions = [
 		"eui-1dee0b64b020eec4" => "Meetjestad #1 (De WAR)",
+		"mjs-gateway-1" => "Meetjestad #1 (De WAR)",
 		"mjs-gateway-3" => "Meetjestad #3 (Berghotel)",
 		"mjs-gateway-6" => "Meetjestad #6 (La Balise)",
 		"eui-1dee1cc11cba7539" => "Meetjestad #4 (De Koperhorst)",
+		"mjs-gateway-4" => "Meetjestad #4 (De Koperhorst)",
 		"eui-0000024b080e020a" => "(NH Hotel Amersfoort)",
 		"eui-0000024b080602ed" => "(De Bilt)",
 		"eui-000078a504f5b057" => "(De Bilt)",
