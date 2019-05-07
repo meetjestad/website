@@ -85,7 +85,8 @@
 				header('Content-Type: application/json; charset=UTF-8');
 				break;
 		}
-		header('Content-Disposition: attachment; filename="MjS-data.'.$format.'"');
+		if (isset($_GET['download']) && $_GET['download'])
+			header('Content-Disposition: attachment; filename="MjS-data.'.$format.'"');
 		
 		if ($type!='stories' && $format=='json') echo '[';
 		
@@ -224,6 +225,11 @@
 	</head>
 	<body>
 		<form method="get" target="_blank">
+			<!-- set this value to 0 to suppress the
+			content-disposition header and allow the browser to
+			show the file contents rather than prompting a "save
+			as..." dialog. -->
+			<input type="hidden" name="download" value="1">
 			<img id="logo" src="../images/logo_dataloket.png"><br/>
 			All data from Meet je stad is made available as <a href="https://opendatacommons.org/licenses/odbl/summary/">open data</a>.<br/> Using the data or interpretations thereof is at ones own risk.<br/> For more information, read the licenses for the <a href="http://opendatacommons.org/licenses/odbl/1.0/">database</a> and its <a href="http://opendatacommons.org/licenses/dbcl/1.0/">content</a>.
 			<h3>1. Choose data type</h3>
