@@ -171,7 +171,7 @@
 		exit;
 	}
 	
-	if (file_exists('sensorsets.json')) $sensorsets = json_decode(file_get_contents('sensorsets.json'), true);
+	if (file_exists('../sensorsets.json')) $sensorsets = json_decode(file_get_contents('../sensorsets.json'), true);
 	else $sensorsets = array();
 ?>
 <!DOCTYPE html>
@@ -179,7 +179,8 @@
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 		<title>Meet je stad dataloket</title>
-		<link rel="stylesheet" href="css/pikaday.css">
+		<link rel="stylesheet" href="../css/pikaday.css">
+		<link rel="stylesheet" href="../css/meetjestad.css">
 		<style>
 			body {
 				font-family: Dosis;
@@ -207,7 +208,7 @@
 			:-ms-input-placeholder {  
 				font-style: italic; 
 			}
-			#logo {
+			#datalogo {
 				width: 40%;
 			}
 			@font-face {
@@ -239,7 +240,7 @@
 			show the file contents rather than prompting a "save
 			as..." dialog. -->
 			<input type="hidden" name="download" value="1">
-			<img id="logo" src="../images/logo_dataloket.png"><br/>
+			<img id="datalogo" src="../images/logo_dataloket.png"><br/>
 			All data from Meet je stad is made available as <a href="https://opendatacommons.org/licenses/odbl/summary/">open data</a>.<br/> Using the data or interpretations thereof is at ones own risk.<br/> For more information, read the licenses for the <a href="http://opendatacommons.org/licenses/odbl/1.0/">database</a> and its <a href="http://opendatacommons.org/licenses/dbcl/1.0/">content</a>.
 			<h3>1. Choose data type</h3>
 			<input type="radio" name="type" value="sensors" onclick="document.getElementById('sensors').style.display='block'; document.getElementById('xml').style.display='block';" checked="checked"/> Measurements
