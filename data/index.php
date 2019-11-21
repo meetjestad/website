@@ -47,7 +47,15 @@
 				if ($rows>0) {
 					if ($rows>1) $output.= ",";
 					$output.= '{';
-					for($i=0;$i<$cols;$i++) $output.= ($i?",":"").'"'.$fieldNames[$i].'":"'.$data[$i].'"';
+//					for($i=0;$i<$cols;$i++) $output.= ($i?",":"").'"'.$fieldNames[$i].'":"'.$data[$i].'"';
+					for($i=0;$i<$cols;$i++) {
+						if ($data[$i]) {
+							if ($i) $output.= ",";
+							$output.= '"'.$fieldNames[$i].'":';
+							if ($fieldNames[$i]=='timestamp') $output.= '"'.$data[$i].'"';
+							else $output.= $data[$i];
+						}
+					}
 					$output.= '}';
 				}
 				break;
