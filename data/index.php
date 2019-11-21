@@ -234,6 +234,9 @@
 		</script>
 	</head>
 	<body>
+<?php if (!array_key_exists('nohome', $_GET)) { ?>
+		<a id="homelink" class="menuDefault" href="/">&lt;HOME</a>
+<?php } ?>
 		<form method="get" target="_blank">
 			<!-- set this value to 0 to suppress the
 			content-disposition header and allow the browser to
