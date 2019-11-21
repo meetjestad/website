@@ -248,15 +248,15 @@
 					$url = "http://www.openstreetmap.org/?mlat=" . $gwdata['latitude'] . "&amp;mlon=" . $gwdata['longitude'];
 					echo("  <td><a href=\"" . $url . "\">" . $gw . "</a></td>\n");
 				} else {
-					echo("  <td>" . $gw . "</td>\n");
+					echo("  <td>" . htmlspecialchars($gw) . "</td>\n");
 				}
 				if ($distance)
 					echo("  <td>" . round($distance / 1000, 3) . "km</td>\n");
 				else
 					echo("  <td>-</td>\n");
-				echo("  <td>" . $gwdata["rssi"] . "</td>\n");
-				echo("  <td>" . $gwdata["snr"] . "</td>\n");
-				echo("  <td>" . $metadata["frequency"] . "Mhz, " . $metadata["data_rate"] . ", " .$metadata["coding_rate"] . "CR</td>\n");
+				echo("  <td>" . htmlspecialchars($gwdata["rssi"]) . "</td>\n");
+				echo("  <td>" . htmlspecialchars($gwdata["snr"]) . "</td>\n");
+				echo("  <td>" . htmlspecialchars($metadata["frequency"]) . "Mhz, " . htmlspecialchars($metadata["data_rate"]) . ", " .htmlspecialchars($metadata["coding_rate"]) . "CR</td>\n");
 
 				if (!array_key_exists($gw_id, $stations_per_gateway)) {
 					$stations_per_gateway[$gw_id] = array();
@@ -290,7 +290,7 @@
 			ksort($stations_per_count);
 			foreach($stations_per_count as $count => $stations) {
 				$stationlist = implode(", ", $stations);
-				echo("<tr><td>$count</td><td>$stationlist</td></tr>\n");
+				echo("<tr><td>".htmlspecialchars($count)."</td><td>".htmlspecialchars($stationlist)."</td></tr>\n");
 			}
 		?>
 		</table>
@@ -311,16 +311,16 @@
 				foreach ($stations as $station) {
 					if ($stationlist)
 						$stationlist .= ', ';
-					$url = '?sensors=' . $station;
-					$stationlist .= "<a href=\"$url\">" . htmlspecialchars($station) . "</a>";
+					$url = '?sensors=' . urlencode($station);
+					$stationlist .= "<a href=\"".htmlspecialchars($url)."\">" . htmlspecialchars($station) . "</a>";
 					if (array_key_exists($station, $distances_per_gateway[$gw_id])) {
 						$distance = $distances_per_gateway[$gw_id][$station];
 						$stationlist .= ' (' . round($distance / 1000, 3) . 'km)';
 					}
 				}
 				$stationcount = count($stations);
-				$url = '?gateways=' . htmlspecialchars($gw_id) . '&show_other_gateways=1';
-				echo("<tr><td>$gw (<a href=\"$url\">filter</a>)</td><td>$messagecount</td><td>$stationcount</td><td>$stationlist</td></tr>\n");
+				$url = '?gateways=' . urlencode($gw_id) . '&show_other_gateways=1';
+				echo("<tr><td>".htmlspecialchars($gw)." (<a href=\"".htmlspecialchars($url)."\">filter</a>)</td><td>".htmlspecialchars($messagecount)."</td><td>".htmlspecialchars($stationcount)."</td><td>".htmlspecialchars($stationlist)."</td></tr>\n");
 			}
 		?>
 		</table>
