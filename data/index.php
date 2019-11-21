@@ -19,7 +19,7 @@
 	$format = isset($_GET['format']) ? $_GET['format'] : '';
 	if (isset($_GET['cmd'])) switch ($_GET['cmd']) {
 		case 'show heatmap':
-			header('Location: http://meetjestad.net?layer=hittekaart&ids='.$ids.'&start='.$start.'&end='.$end);
+			header('Location: http://meetjestad.net/index_oud.php?layer=hittekaart&ids='.$ids.'&start='.$start.'&end='.$end);
 			exit;
 		case 'download CSV':
 			$format = 'csv';
