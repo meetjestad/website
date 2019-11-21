@@ -106,7 +106,6 @@
 	];
 
 	$result = $database->query("SELECT msr.*, msg.message FROM sensors_measurement AS msr LEFT JOIN sensors_message AS msg ON (msg.id = msr.message_id) $WHERE ORDER BY msr.timestamp DESC LIMIT $limit");
-	print($database->error);
 	$count_per_station = array();
 	$stations_per_gateway = array();
 	$messagecount_per_gateway = array();
