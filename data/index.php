@@ -90,6 +90,7 @@
 				break;
 			case 'json':
 				header('Content-Type: application/json; charset=UTF-8');
+				header("Access-Control-Allow-Origin: *");
 				break;
 			default:
 				echo("Unsupported format");
