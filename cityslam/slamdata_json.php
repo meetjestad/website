@@ -25,7 +25,7 @@
 	$ToffN = array();
 	if (isset($_GET['calibrate'])) {
 		// get data from mysql database
-		$result = $database->query("SELECT * FROM slam_measurement WHERE timestamp >= '".$date."' AND timestamp < '".$nextday."'");
+		$result = $database->query("SELECT * FROM slam_measurement WHERE timestamp >= '".$database->real_escape_string($date)."' AND timestamp < '".$database->real_escape_string($nextday)."'");
 		$list = array();
 		$i = 0;
 		while($row = $result->fetch_array(MYSQLI_ASSOC)) {
@@ -78,7 +78,7 @@
 		foreach($Toff as $id => $val) $Toff[$id]/= $ToffN[$id];
 	}
 
-	$result = $database->query("SELECT * FROM slam_measurement WHERE timestamp >= '".$date."' AND timestamp < '".$nextday."'");
+	$result = $database->query("SELECT * FROM slam_measurement WHERE timestamp >= '".$database->real_escape_string($date)."' AND timestamp < '".$database->real_escape_string($nextday)."'");
 	$json = '[';
 	while($row = $result->fetch_array(MYSQLI_ASSOC)) {
 		if ($json != "[") $json .= ",";
