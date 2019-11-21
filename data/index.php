@@ -35,9 +35,8 @@
 		static $rows = 0;
 		static $cols = 0;
 		static $fieldNames = array();
-		$rowCount = 0;
 		
-		if ($rowCount == 0) {
+		if ($rows == 0) {
 			$fieldNames = $data;
 			$cols = count($data);
 		}
