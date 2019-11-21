@@ -19,7 +19,7 @@
 	$format = isset($_GET['format']) ? $_GET['format'] : '';
 	if (isset($_GET['cmd'])) switch ($_GET['cmd']) {
 		case 'show heatmap':
-			header('Location: http://meetjestad.net/index_oud.php?layer=hittekaart&ids='.$ids.'&start='.$start.'&end='.$end);
+			header('Location: http://meetjestad.net/index_oud.php?layer=hittekaart&ids='.urlencode($ids).'&start='.urlencode($start).'&end='.urlencode($end));
 			exit;
 		case 'download CSV':
 			$format = 'csv';
@@ -84,6 +84,9 @@
 			case 'json':
 				header('Content-Type: application/json; charset=UTF-8');
 				break;
+			default:
+				echo("Unsupported format");
+				exit;
 		}
 		if (isset($_GET['download']) && $_GET['download'])
 			header('Content-Disposition: attachment; filename="MjS-data.'.$format.'"');
@@ -95,14 +98,12 @@
 				include ("../connect.php");
 				$database = Connection();
 				$WHERE = "";
-				if ($start) $WHERE.= " WHERE timestamp >= '$start'";
-				if ($end) $WHERE.= ($WHERE?" AND ":" WHERE ")."timestamp <= '$end'";
-				if ($ids) $WHERE.= ($WHERE?" AND ":" WHERE ")."station_id IN ($ids)";
+				if ($start) $WHERE.= " WHERE timestamp >= '" . $database->real_escape_string($start) . "'";
+				if ($end) $WHERE.= ($WHERE?" AND ":" WHERE ")."timestamp <= '" . $database->real_escape_string($end) . "'";
+				if ($ids) $WHERE.= ($WHERE?" AND ":" WHERE ")."station_id IN (" . $database->real_escape_string($ids) . ")";
 				$SORT = ' ORDER BY timestamp ASC';
 				$query = "SELECT * FROM sensors_measurement".$WHERE.$SORT;
 				$results = $database->query($query, MYSQLI_USE_RESULT) or die(mysqli_error($database)); ;
-				//~ echo 'hop';
-				//~ exit;
 				
 				echoTableRow(array("id", "timestamp", "longitude", "latitude", "temperature", "humidity", "lux", "supply", "pm2.5", "pm10"));
 
@@ -124,8 +125,8 @@
 				include ("../connect.php");
 				$database = Connection();
 				$WHERE = "";
-				if ($start) $WHERE.= " WHERE datum >= '$start'";
-				if ($end) $WHERE.= ($WHERE?" AND ":" WHERE ")."datum <= '$end'";
+				if ($start) $WHERE.= " WHERE datum >= '" . $database->real_escape_string($start) . "'";
+				if ($end) $WHERE.= ($WHERE?" AND ":" WHERE ")."datum <= '" . $database->real_escape_string($end) . "'";
 				
 				$query = "SELECT soort_id,waarneming_id,datum,locatie,omschrijving FROM flora_observaties".$WHERE;
 				$results = $database->query($query, MYSQLI_USE_RESULT);
@@ -133,7 +134,7 @@
 				echoTableRow(array("datum", "longitude", "latitude", "soort_nl", "soort_la", "waarneming", "notitie"));
 				
 				while($result = $results->fetch_array(MYSQLI_ASSOC)) {
-					$flora = $database->query("SELECT naam_nl,naam_la,afbeelding,omschrijving,waarnemingen FROM flora WHERE id=".$result["soort_id"]);
+					$flora = $database->query("SELECT naam_nl,naam_la,afbeelding,omschrijving,waarnemingen FROM flora WHERE id=".$database->real_escape_string($result["soort_id"]));
 					$species = $flora->fetch_array(MYSQLI_ASSOC);
 					$waarnemingen = json_decode($species["waarnemingen"]);
 					$omschrijving = filter_var(str_replace(array("\n", "\r", "\t")," ",$result['omschrijving']), FILTER_SANITIZE_STRING);
@@ -217,7 +218,7 @@
 			function selectSet(id) {
 				switch(id) {
 <?
-	foreach($sensorsets as $id => $set) echo 'case \''.$id.'\': document.getElementById(\'idlist\').value = \''.$set['ids'].'\'; break;'."\r\n"; 
+	foreach($sensorsets as $id => $set) echo 'case '.json_encode($id).': document.getElementById(\'idlist\').value = '.json_encode($set['ids']).'; break;'."\r\n"; 
 ?>
 				}
 			}
@@ -261,7 +262,7 @@
 				<select onchange="selectSet(this.value);">
 					<option selected="selected" disabled="disabled">...or choose a dataset</option>
 <?
-	foreach($sensorsets as $id => $set) echo '<option value="'.$id.'">'.$set['description'].'</option>';
+	foreach($sensorsets as $id => $set) echo '<option value="'.htmlspecialchars($id).'">'.htmlspecialchars($set['description']).'</option>';
 ?>
 				</select><br/>
 				<input type="text" name="ids" id="idlist" placeholder="2,5,19-23" style="width:330px; margin-top:5px;"/>
