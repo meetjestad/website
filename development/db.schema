@@ -1,0 +1,138 @@
+--
+-- Table structure for table `flora`
+--
+
+CREATE TABLE `flora` (
+  `id` int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
+  `naam_nl` varchar(64) NOT NULL,
+  `naam_la` varchar(64) NOT NULL,
+  `afbeelding` varchar(64) NOT NULL,
+  `omschrijving` text NOT NULL,
+  `waarnemingen` varchar(256) NOT NULL
+) DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `flora_observaties`
+--
+
+CREATE TABLE `flora_observaties` (
+  `id` int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
+  `soort_id` int(11) NOT NULL,
+  `waarneming_id` int(11) NOT NULL,
+  `datum` date NOT NULL,
+  `locatie` varchar(128) NOT NULL,
+  `omschrijving` text NOT NULL
+) DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `sensors_health`
+--
+
+CREATE TABLE `sensors_health` (
+  `id` int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
+  `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `humhealth` float NOT NULL,
+  `perchasgps` float NOT NULL,
+  `radiosuccess` float NOT NULL,
+  `supply` float NOT NULL,
+  `longitude` float NOT NULL,
+  `latitude` float NOT NULL
+) DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `sensors_measurement`
+--
+
+CREATE TABLE `sensors_measurement` (
+  `id` int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
+  `station_id` int(11) NOT NULL,
+  `message_id` int(11) NOT NULL,
+  `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `latitude` float NOT NULL,
+  `longitude` float NOT NULL,
+  `temperature` float NOT NULL,
+  `humidity` float NOT NULL,
+  `battery` float DEFAULT NULL,
+  `supply` float DEFAULT NULL,
+  `firmware_version` int(11) DEFAULT NULL,
+  `lux` int(16) DEFAULT NULL,
+  `pm2_5` int(11) DEFAULT NULL,
+  `pm10` int(11) DEFAULT NULL
+) DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `sensors_message`
+--
+
+CREATE TABLE `sensors_message` (
+  `id` int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
+  `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `message` text NOT NULL
+) DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `sensors_station`
+--
+
+CREATE TABLE `sensors_station` (
+  `id` int(11) NOT NULL PRIMARY KEY,
+  `last_measurement` int(11) NOT NULL,
+  `last_timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `slam_measurement`
+--
+
+CREATE TABLE `slam_measurement` (
+  `id` int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
+  `station_id` int(11) NOT NULL,
+  `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `latitude` float NOT NULL,
+  `longitude` float NOT NULL,
+  `temperature` float NOT NULL,
+  `humidity` float NOT NULL,
+  `supply` float DEFAULT NULL
+) DEFAULT CHARSET=latin1;
+
+--
+-- Indexes for dumped tables
+--
+
+--
+-- Indexes for table `sensors_measurement`
+--
+ALTER TABLE `sensors_measurement`
+  ADD KEY `station_id` (`station_id`),
+  ADD KEY `timestamp` (`timestamp`);
+
+--
+-- Indexes for table `sensors_message`
+--
+ALTER TABLE `sensors_message`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `sensors_station`
+--
+ALTER TABLE `sensors_station`
+  ADD KEY `last_measurement` (`last_measurement`);
+
+--
+-- Indexes for table `slam_measurement`
+--
+ALTER TABLE `slam_measurement`
+  ADD KEY `station_id` (`station_id`),
+  ADD KEY `timestamp` (`timestamp`,`station_id`);
