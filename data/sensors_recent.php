@@ -230,7 +230,7 @@
 			}
 
 			if (empty($gwdata)) {
-				echo("  <td colspan=\"4\">Niet beschikbaar</a>");
+				echo("  <td colspan=\"5\">Not available</a>");
 			} else {
 				$gw_id = $gwdata['gtw_id'];
 
