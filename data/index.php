@@ -15,6 +15,12 @@
 		}, urldecode($_GET['ids']));
 	}
 	else $ids = false;
+
+	//Option for limiting the number of results, making sure it is numeric to prevent injection.
+	//Perhaps this should allow for A,B to allow paging?
+	if(isset($_GET['limit']) && is_numeric($_GET['limit']) && $_GET['limit']>0){
+		$LIMIT = ' LIMIT = '+$_GET['limit'];
+	}
 	
 	$format = isset($_GET['format']) ? $_GET['format'] : '';
 	if (isset($_GET['cmd'])) switch ($_GET['cmd']) {
@@ -78,7 +84,7 @@
 		echo $output;
 	}
 	
-	// query: ?type=sensors|observations|stories&start=timestamp&end=timestamp&ids=1,2-4
+	// query: ?type=sensors|observations|stories&start=timestamp&end=timestamp&ids=1,2-4&limit=1&sort_order=asc
 	if ($type) {
 		set_time_limit(0);                   // ignore php timeout
 		ob_start();
@@ -105,12 +111,16 @@
 			case 'sensors':
 				include ("../connect.php");
 				$database = Connection();
+				//Build where clause
 				$WHERE = "";
 				if ($start) $WHERE.= " WHERE timestamp >= '" . $database->real_escape_string($start) . "'";
 				if ($end) $WHERE.= ($WHERE?" AND ":" WHERE ")."timestamp <= '" . $database->real_escape_string($end) . "'";
 				if ($ids) $WHERE.= ($WHERE?" AND ":" WHERE ")."station_id IN (" . $database->real_escape_string($ids) . ")";
-				$SORT = ' ORDER BY timestamp ASC';
-				$query = "SELECT * FROM sensors_measurement".$WHERE.$SORT;
+				//Determine sort order
+				$SORT = ' ORDER BY timestamp '.$_GET['sort_order'];
+				//Build query
+				$query = "SELECT * FROM sensors_measurement".$WHERE.$SORT.$LIMIT;
+				
 				$results = $database->query($query, MYSQLI_USE_RESULT) or die(mysqli_error($database)); ;
 				
 				echoTableRow(array("id", "timestamp", "longitude", "latitude", "temperature", "humidity", "lux", "supply", "pm2.5", "pm10"));
@@ -279,7 +289,15 @@
 				</select><br/>
 				<input type="text" name="ids" id="idlist" placeholder="2,5,19-23" style="width:330px; margin-top:5px;"/>
 			</fieldset>
-			
+			<fieldset id="limit">
+				<legend>Limit results (0=all)</legend>
+				<input type="text" name="limit" id="limit" placeholder="0" style="width:90%"/>
+			</fieldset>
+			<fieldset id="sort">
+				<legend>Sort order</legend>
+				<input type="radio" name="sort_order" value='ASC' checked>Oldest first<br/>
+				<input type="radio" name="sort_order" value='DESC'>Newest first
+			</fieldset>
 			<h3>3. Download data or generate map</h3>
 			<fieldset id="data">
 				<legend>Data</legend>
