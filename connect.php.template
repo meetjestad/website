@@ -1,0 +1,13 @@
+<?php
+	// Make a mysql connection
+        function Connection() {
+                $uri = "localhost";
+                $usr = "meetjestad_usr";
+                $pwd = "";
+                $db = "meetjestad_db";
+
+                $database = new mysqli($uri, $usr, $pwd, $db);
+                if (!$database) die('MySQL ERROR: '.mysql_error());
+                else return $database;
+        }
+?>
