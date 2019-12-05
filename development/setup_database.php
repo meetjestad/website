@@ -109,6 +109,12 @@
 			$timestamp = $FIRST_MEASUREMENT + rand(0, $max_start_offset);
 			$last_measurement_id = false;
 			$last_timestamp = false;
+
+			// Stick to a single firmware_version for each station
+			$firmware_version = rand(0, $MAX_FIRMWARE_VERSION);
+			if ($firmware_version == 0)
+				$firmware_version = null;
+
 			while ($timestamp <= $LAST_MEASUREMENT) {
 				// TODO: Generate a fake TTN message JSON for sensors_message
 				$message_id = 0;
@@ -119,9 +125,6 @@
 				$humidity = 50;
 				$battery = null;
 				$supply = 3.3;
-				$firmware_version = rand(0, $MAX_FIRMWARE_VERSION);
-				if ($firmware_version == 0)
-					$firmware_version = null;
 				$lux = null;
 				$pm2_5 = null;
 				$pm10 = null;
