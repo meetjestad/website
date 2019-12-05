@@ -120,12 +120,6 @@ ALTER TABLE `sensors_measurement`
   ADD KEY `timestamp` (`timestamp`);
 
 --
--- Indexes for table `sensors_message`
---
-ALTER TABLE `sensors_message`
-  ADD PRIMARY KEY (`id`);
-
---
 -- Indexes for table `sensors_station`
 --
 ALTER TABLE `sensors_station`
