@@ -53,6 +53,7 @@
 							if ($i) $output.= ",";
 							$output.= '"'.$fieldNames[$i].'":';
 							if ($fieldNames[$i]=='timestamp') $output.= '"'.$data[$i].'"';
+							else if ($fieldNames[$i]=='extra') $output.= '['.$data[$i].']';
 							else $output.= $data[$i];
 						}
 					}
@@ -60,7 +61,11 @@
 				}
 				break;
 			case 'csv':
-				for($i=0;$i<$cols;$i++) $output.= ($i?"\t":"").$data[$i];
+				for($i=0;$i<$cols;$i++) {
+					$output.= ($i?"\t":"");
+					if ($fieldNames[$i]=='extra') $output.= str_replace(',', "\t", $data[$i]);
+					else $output.= $data[$i];
+				}
 				$output.= "\n";
 				break;
 		}
@@ -113,7 +118,7 @@
 				$query = "SELECT * FROM sensors_measurement".$WHERE.$SORT;
 				$results = $database->query($query, MYSQLI_USE_RESULT) or die(mysqli_error($database)); ;
 				
-				echoTableRow(array("id", "timestamp", "longitude", "latitude", "temperature", "humidity", "lux", "supply", "pm2.5", "pm10"));
+				echoTableRow(array("id", "timestamp", "longitude", "latitude", "temperature", "humidity", "lux", "supply", "pm2.5", "pm10", "extra"));
 
 				while(($result = $results->fetch_array(MYSQLI_ASSOC)) != false) {
 					// No valid position is encoded in the
@@ -124,7 +129,7 @@
 						$result['latitude'] = '';
 					if ($result['longitude'] == 0)
 						$result['longitude'] = '';
-					echoTableRow(array($result["station_id"], $result["timestamp"], $result["longitude"], $result["latitude"], $result["temperature"], $result["humidity"], $result["lux"], $result["supply"], $result["pm2_5"], $result["pm10"]));
+					echoTableRow(array($result["station_id"], $result["timestamp"], $result["longitude"], $result["latitude"], $result["temperature"], $result["humidity"], $result["lux"], $result["supply"], $result["pm2_5"], $result["pm10"], $result["extra"]));
 					ob_flush();
 					flush();
 				}
