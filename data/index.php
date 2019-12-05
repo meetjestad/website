@@ -45,7 +45,7 @@
 		switch($format) {
 			case 'json':
 				if ($rows>0) {
-					if ($rows>1) $output.= ",";
+					if ($rows>1) $output.= ",\n";
 					$output.= '{';
 //					for($i=0;$i<$cols;$i++) $output.= ($i?",":"").'"'.$fieldNames[$i].'":"'.$data[$i].'"';
 					for($i=0;$i<$cols;$i++) {
