@@ -63,7 +63,8 @@ CREATE TABLE `sensors_measurement` (
   `firmware_version` int(11) DEFAULT NULL,
   `lux` int(16) DEFAULT NULL,
   `pm2_5` int(11) DEFAULT NULL,
-  `pm10` int(11) DEFAULT NULL
+  `pm10` int(11) DEFAULT NULL,
+  `extra` VARCHAR(100) DEFAULT NULL
 ) DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
