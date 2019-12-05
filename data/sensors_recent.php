@@ -49,6 +49,7 @@
 				<th>PM2.5</th>
 				<th>PM10</th>
 				<th>Voltage</th>
+				<th>Extra</th>
 				<th>Firmware</th>
 				<th>Position</th>
 				<th>Fcnt</th>
@@ -210,6 +211,7 @@
 				} else {
 					output_cell($rowspan, '-');
 				}
+				output_cell($rowspan, $row["extra"]);
 				if ($row['firmware_version'] === null)
 					output_cell($rowspan, '< v1');
 				else
