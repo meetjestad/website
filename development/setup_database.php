@@ -50,7 +50,8 @@
 			die(__LINE__ . ": " . $db->error);
 		// Iterate results for all executed queries, otherwise subsequent queries fail
 		while($db->more_results()) {
-			$db->next_result();
+			if ($db->next_result() === false)
+				die(__LINE__ . ": " . $db->error);
 			$db->use_result();
 		}
 		print("<p>Created tables</p>");
