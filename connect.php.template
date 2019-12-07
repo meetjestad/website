@@ -1,5 +1,5 @@
 <?php
-	// Make a mysql connection
+        // Make a mysql connection
         function Connection() {
                 $uri = "localhost";
                 $usr = "meetjestad_usr";
