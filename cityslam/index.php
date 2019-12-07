@@ -1,4 +1,4 @@
-<?
+<?php
 	require('../connect.php');
 	$database = Connection();
 
@@ -64,7 +64,7 @@
 			<table>
 				<tr>
 					<th>Meet je stad cityslam</th>
-					<td><? echo $slamIndex; ?></td>
+					<td><?=$slamIndex?></td>
 					<td id="download"></td>
 				</tr>
 			</table>
