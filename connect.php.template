@@ -7,7 +7,7 @@
                 $db = "meetjestad_db";
 
                 $database = new mysqli($uri, $usr, $pwd, $db);
-                if (!$database) die('MySQL ERROR: '.mysql_error());
+                if ($database->connect_errno) die('MySQL ERROR: '.$database->connect_error);
                 else return $database;
         }
 ?>
