@@ -12,6 +12,8 @@
 	include ("../connect.php");
 	$database = Connection();
 
+	include ("healthlib.php");
+
 	$id = $query;
 
 	// === get measurements === //
@@ -182,8 +184,7 @@
 			<fieldset class="pane">
 				<legend>health</legend>
 <?php
-	$health = file_get_contents("https://meetjestad.net/node/health.php?id=".$id);
-	echo $health;
+	health($id, 'table');
 ?>
 			</fieldset>
 		</div>
