@@ -77,19 +77,25 @@
 	}
 
 	$result = $database->query("SELECT * FROM slam_measurement WHERE timestamp >= '".$database->real_escape_string($date)."' AND timestamp < '".$database->real_escape_string($nextday)."'");
-	$json = '[';
+	$features = [];
 	while($row = $result->fetch_array(MYSQLI_ASSOC)) {
-		if ($json != "[") $json .= ",";
-		$json.= '{"type":"Feature",';
-		$json.= '"properties":{';
-		$json.= '"temperature":"'.round($row["temperature"]+(isset($Toff[$row["station_id"]])?$Toff[$row["station_id"]]:0),2).'",';
-		$json.= '"humidity":"'.$row["humidity"].'"},';
-		$json.= '"geometry":{';
-		$json.= '"type":"Point",';
-		$json.= '"coordinates":['.$row["longitude"].','.$row["latitude"].']}}';
+		$features[] = [
+			'type' => 'Feature',
+			'properties' => [
+				'temperature' => round($row["temperature"]+(isset($Toff[$row["station_id"]])?$Toff[$row["station_id"]]:0),2),
+				'humidity' => $row["humidity"],
+			],
+			'geometry' => [
+				'type' => 'Point',
+				'coordinates' => [floatval($row["longitude"]),floatval($row["latitude"])],
+			],
+		];
 	}
-	$json.= ']';
-	$json = '{"type":"FeatureCollection","features":'.$json.'}';
+
+	$json = json_encode([
+		'type' => 'FeatureCollection',
+		'features' => $features,
+	]);
 
 	// output data
 	header("Access-Control-Allow-Origin: *");
