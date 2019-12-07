@@ -223,7 +223,7 @@
 				var row;
 
 				for (i=0; i<ids.length; i++) {
-					ajax('node/health.php?id='+ids[i]+'&layout=json', function(response) {
+					ajax('health.php?id='+ids[i]+'&layout=json', function(response) {
 						if (response) {
 							var json = JSON.parse(response);
 
