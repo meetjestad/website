@@ -67,7 +67,7 @@
 		<!-- Load Meetjestad javascript and stylesheet -->
 		<link rel="stylesheet" type="text/css" href="../css/meetjestad.css" media="all" />
 		<script>
-			var dataUrl = 'https://meetjestad.net/data/sensors_json.php?<?echo $dataSelection;?>';
+			var dataUrl = 'https://meetjestad.net/data/sensors_json.php?<?=$dataSelection?>';
 		</script>
 		<script src="../js/mapfunctions.js"></script>
 		<script src="../js/backgroundlayers.js"></script>
