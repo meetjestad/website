@@ -108,7 +108,7 @@
 				var series = '';
 				if (selection["temperature"].checked) series+= (series?',':'') + 'temperature';
 				if (selection["humidity"].checked) series+= (series?',':'') + 'humidity';
-<?php if ($light) {?>
+<?php if ($light !== null) {?>
 				if (selection["lux"].checked) series+= (series?',':'') + 'lux';
 <?php } ?>
 				document.getElementById('series').src = 'series.php?id=<?=htmlspecialchars(rawurlencode($id))?>&time='+time+'&series='+series+'&width='+(document.getElementById('paneData').offsetWidth-120);
@@ -131,7 +131,7 @@
 <?php } ?>
 						<tr><td>Temperature</td><td>T</td><td style="text-align:right;"><?=$temperature?></td><td>⁰C</td></tr>
 						<tr><td>Relative Humidity</td><td>Φ</td><td style="text-align:right;"><?=$humidity?></td><td>%</td></tr>
-<?php if ($light) {?>
+<?php if ($light !== null) {?>
 						<tr><td>Illuminance</td><td>E</td><td style="text-align:right;"><?=$light?></td><td>lx</td></tr>
 <?php } ?>
 					</table>
@@ -140,7 +140,7 @@
 					<div style="display:inline-block; float:left;">
 						<input type="checkbox" name="temperature" checked="checked" onclick="drawSeries();"/><span style="color:#fb6127;">T</span><br/>
 						<input type="checkbox" name="humidity" onclick="drawSeries();"/><span style="color:#5677fc;">Φ</span><br/>
-<?php if ($light) {?>
+<?php if ($light !== null) {?>
 						<input type="checkbox" name="lux" onclick="drawSeries();"/><span style="color:#8f8fbf;">E</span>
 <?php } ?>
 					</div>
