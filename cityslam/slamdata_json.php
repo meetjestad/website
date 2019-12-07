@@ -16,7 +16,8 @@
 	$datetime->modify('+1 day');
 	$nextday = $datetime->format('Y-m-d');
 
-	$database = new mysqli("localhost", "meetjestad_usr", "ijsvrij", "meetjestad_db");
+	require('../connect.php');
+	$database = Connection();
 
 	$Toff = array();
 	$ToffN = array();
