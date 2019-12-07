@@ -1,6 +1,4 @@
 <?php
-	error_reporting(E_ALL & ~E_NOTICE);
-
 	function corr($a, $b) {
 		$sum_ab = 0;
 		$sum_a = 0;
