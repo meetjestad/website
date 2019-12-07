@@ -54,7 +54,7 @@
 	$svg = '<?xml version="1.0" encoding="utf-8" standalone="no"?>' . "\n";
 	$svg.= '<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">';
 	$svg.= '<svg width="'.htmlspecialchars($width+$margin).'px" height="'.htmlspecialchars($height).'px" id="graph" version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 '.htmlspecialchars($width+$margin).' '.htmlspecialchars($height).'" preserveAspectRatio="none" style="font-family:dosis; font-size:12px;">';
-	$svg.= '<defs><style type="text/css">@font-face {font-family:dosis; src:url(\'../style/fonts/Dosis-Regular.otf\');}</style></defs>';
+	$svg.= '<defs><style type="text/css">@font-face {font-family:dosis; src:url(\'../css/fonts/Dosis-Regular.otf\');}</style></defs>';
 
 	// draw border
 	$svg.= '<rect x="'.htmlspecialchars($margin).'" y="0" width="'.htmlspecialchars($width).'" height="'.htmlspecialchars($height).'" vector-effect="non-scaling-stroke" style="fill:white;stroke:black;"></rect>';
