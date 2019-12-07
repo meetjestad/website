@@ -95,12 +95,12 @@ function health($id, $layout) {
 
 		if ($cacheResult->num_rows === 0) {
 			$q = $database->prepare("INSERT INTO sensors_health SET id = ?, timestamp = ?, humhealth = ?, perchasgps = ?, radiosuccess = ?, supply = ?, longitude = ?, latitude = ?");
-			$q->bind_param('isdddddd', $id, $timestamp, $humhealth, $perchasgps, $radionsuccess, $supply, $longitude, $latitude);
+			$q->bind_param('isdddddd', $id, $timestamp, $humhealth, $perchasgps, $radiosuccess, $supply, $longitude, $latitude);
 			$q->execute();
 		}
 		else {
 			$q = $database->prepare("UPDATE sensors_health SET timestamp = ?, humhealth = ?, perchasgps = ?, radiosuccess = ?, supply = ?, longitude = ?, latitude = ?");
-			$q->bind_param('sdddddd', $timestamp, $humhealth, $perchasgps, $radionsuccess, $supply, $longitude, $latitude);
+			$q->bind_param('sdddddd', $timestamp, $humhealth, $perchasgps, $radiosuccess, $supply, $longitude, $latitude);
 			$q->execute();
 		}
 	}
