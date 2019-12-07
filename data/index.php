@@ -1,21 +1,21 @@
 <?php
 	error_reporting(E_ALL);
-	
+
 	$type = isset($_GET['type']) ? $_GET['type'] : false;
 	$comma = isset($_GET['comma']) ? true : false;
-	
+
 	if (isset($_GET['start']) && $_GET['start']) $start = urldecode($_GET['start']);
 	else if (isset($_GET['begin']) && $_GET['begin']) $start = urldecode($_GET['begin']);
 	else $start = false;
 	$end = (isset($_GET['end']) && $_GET['end']) ? urldecode($_GET['end']) : false;
-	
+
 	if(isset($_GET['ids']) && $_GET['ids']) {
 		$ids = preg_replace_callback('/(\d+)-(\d+)/', function($m) {
 			return implode(',', range($m[1], $m[2]));
 		}, urldecode($_GET['ids']));
 	}
 	else $ids = false;
-	
+
 	$format = isset($_GET['format']) ? $_GET['format'] : '';
 	if (isset($_GET['cmd'])) switch ($_GET['cmd']) {
 		case 'show heatmap':
@@ -28,19 +28,19 @@
 			$format = 'json';
 			break;
 	}
-	
+
 	function echoTableRow($data) {
 		global $format;
 		global $comma;
 		static $rows = 0;
 		static $cols = 0;
 		static $fieldNames = array();
-		
+
 		if ($rows == 0) {
 			$fieldNames = $data;
 			$cols = count($data);
 		}
-		
+
 		$output = "";
 		switch($format) {
 			case 'json':
@@ -82,12 +82,12 @@
 		}
 		echo $output;
 	}
-	
+
 	// query: ?type=sensors|observations|stories&start=timestamp&end=timestamp&ids=1,2-4
 	if ($type) {
 		set_time_limit(0);                   // ignore php timeout
 		ob_start();
-		
+
 		// output headers
 		switch($format) {
 			case 'csv':
@@ -103,9 +103,9 @@
 		}
 		if (isset($_GET['download']) && $_GET['download'])
 			header('Content-Disposition: attachment; filename="MjS-data.'.$format.'"');
-		
+
 		if ($type!='stories' && $format=='json') echo '[';
-		
+
 		switch($type) {
 			case 'sensors':
 				include ("../connect.php");
@@ -117,7 +117,7 @@
 				$SORT = ' ORDER BY timestamp ASC';
 				$query = "SELECT * FROM sensors_measurement".$WHERE.$SORT;
 				$results = $database->query($query, MYSQLI_USE_RESULT) or die(mysqli_error($database)); ;
-				
+
 				echoTableRow(array("id", "timestamp", "longitude", "latitude", "temperature", "humidity", "lux", "supply", "pm2.5", "pm10", "extra"));
 
 				while(($result = $results->fetch_array(MYSQLI_ASSOC)) != false) {
@@ -140,19 +140,19 @@
 				$WHERE = "";
 				if ($start) $WHERE.= " WHERE datum >= '" . $database->real_escape_string($start) . "'";
 				if ($end) $WHERE.= ($WHERE?" AND ":" WHERE ")."datum <= '" . $database->real_escape_string($end) . "'";
-				
+
 				$query = "SELECT soort_id,waarneming_id,datum,locatie,omschrijving FROM flora_observaties".$WHERE;
 				$results = $database->query($query, MYSQLI_USE_RESULT);
-				
+
 				echoTableRow(array("datum", "longitude", "latitude", "soort_nl", "soort_la", "waarneming", "notitie"));
-				
+
 				while($result = $results->fetch_array(MYSQLI_ASSOC)) {
 					$flora = $database->query("SELECT naam_nl,naam_la,afbeelding,omschrijving,waarnemingen FROM flora WHERE id=".$database->real_escape_string($result["soort_id"]));
 					$species = $flora->fetch_array(MYSQLI_ASSOC);
 					$waarnemingen = json_decode($species["waarnemingen"]);
 					$omschrijving = filter_var(str_replace(array("\n", "\r", "\t")," ",$result['omschrijving']), FILTER_SANITIZE_STRING);
 					$locatie = explode(',', $result["locatie"]);
-					
+
 					echoTableRow(array($result["datum"], $locatie[0], $locatie[1], $species["naam_nl"], $species["naam_la"], $waarnemingen[$result["waarneming_id"]], $omschrijving));
 				}
 				break;
@@ -171,11 +171,11 @@
 				echo base64_decode($responses);
 				break;
 		}
-		
+
 		if ($type!='stories' && $format=='json') echo ']';
 		exit;
 	}
-	
+
 	if (file_exists('../sensorsets.json')) $sensorsets = json_decode(file_get_contents('../sensorsets.json'), true);
 	else $sensorsets = array();
 ?>
@@ -205,13 +205,13 @@
 				font-style: italic;
 			}
 			:-moz-placeholder {
-				font-style: italic;  
+				font-style: italic;
 			}
 			::-moz-placeholder {
-				font-style: italic;  
+				font-style: italic;
 			}
-			:-ms-input-placeholder {  
-				font-style: italic; 
+			:-ms-input-placeholder {
+				font-style: italic;
 			}
 			#datalogo {
 				width: 40%;
@@ -232,7 +232,7 @@
 			function selectSet(id) {
 				switch(id) {
 <?
-	foreach($sensorsets as $id => $set) echo 'case '.json_encode($id).': document.getElementById(\'idlist\').value = '.json_encode($set['ids']).'; break;'."\r\n"; 
+	foreach($sensorsets as $id => $set) echo 'case '.json_encode($id).': document.getElementById(\'idlist\').value = '.json_encode($set['ids']).'; break;'."\r\n";
 ?>
 				}
 			}
@@ -254,7 +254,7 @@
 			<input type="radio" name="type" value="sensors" onclick="document.getElementById('sensors').style.display='block'; document.getElementById('xml').style.display='block';" checked="checked"/> Measurements
 			<input type="radio" name="type" value="observations" onclick="document.getElementById('sensors').style.display='none'; document.getElementById('xml').style.display='block';"/> Observations
 			<input type="radio" name="type" value="stories" onclick="document.getElementById('sensors').style.display='none'; document.getElementById('xml').style.display='none'; document.getElementById('json').selected='selected';"/> Stories
-			
+
 <!--
 			<h3>2. Kies experiment</h3>
 			IF Sensoren:<br/>
@@ -265,7 +265,7 @@
 			IF Observaties:<br/>
 			-flora<br/>
 			-foto's
-			
+
 			<h3>3. Maak selectie (optioneel)</h3>
 -->
 			<h3>2. Apply filter (optional)</h3>
@@ -284,7 +284,7 @@
 				</select><br/>
 				<input type="text" name="ids" id="idlist" placeholder="2,5,19-23" style="width:330px; margin-top:5px;"/>
 			</fieldset>
-			
+
 			<h3>3. Download data or generate map</h3>
 			<fieldset id="data">
 				<legend>Data</legend>
