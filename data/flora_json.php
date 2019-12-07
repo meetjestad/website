@@ -1,4 +1,4 @@
-<?
+<?php
 	// Ophalen van de meetdata
 	include ("../connect.php");
 	$database = Connection();

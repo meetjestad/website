@@ -1,4 +1,4 @@
-<?
+<?php
 	// Ophalen van de meetdata
 	$time = time()-60*5;
 	include ("../connect.php");
