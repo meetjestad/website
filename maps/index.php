@@ -1,6 +1,4 @@
 <?php
-	error_reporting(E_ALL & ~E_NOTICE);
-
 	// === get page === //
 	$path = substr($_SERVER["PHP_SELF"], 0, strpos($_SERVER["PHP_SELF"], 'index.php'));
 	// Use REDIRECT_URL when set, since when we are mod_rewritten, this
