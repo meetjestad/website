@@ -141,7 +141,7 @@ function health($id, $layout) {
 	elseif ($humhealth>=0.5) $humiditylight = 'orange';
 	else $humiditylight = 'red';
 
-	if ($radiosucces) {
+	if ($radiosuccess) {
 		if ($radiosuccess>=0.9) $radiolight = 'lime';
 		elseif ($radiosuccess>=0.5) $radiolight = 'orange';
 		else $radiolight = 'red';
