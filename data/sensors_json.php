@@ -15,16 +15,19 @@
 		$WHERE = "";
 	}
 	elseif (isset($_GET['select']) && $_GET['select']=='gone') {
-		$WHERE = "WHERE timestamp < '$time'";
+		$WHERE = "WHERE timestamp < '".$database->real_escape_string($time)."'";
 	}
 	elseif (isset($_GET['start']) || isset($_GET['end'])) {
-		if ($_GET['start']) $WHERE = "WHERE timestamp >= '".urldecode($_GET['start'])."'";
-		if ($_GET['end']) $WHERE.= ($WHERE?" AND ":"WHERE ")."timestamp <= '".urldecode($_GET['end'])."'";
+		if ($_GET['start']) $WHERE = "WHERE timestamp >= '".$database->real_escape_string(urldecode($_GET['start']))."'";
+		if ($_GET['end']) $WHERE.= ($WHERE?" AND ":"WHERE ")."timestamp <= '".$database->real_escape_string(urldecode($_GET['end']))."'";
 	}
 	else {
 		$WHERE = "WHERE timestamp >= '$time'";
 	}
-	if (isset($_GET['ids'])) $WHERE.= ($WHERE?" AND ":" WHERE ")."station_id IN (".$_GET['ids'].")";
+	if (isset($_GET['ids'])) {
+		$ids_int_array = array_map(intval, explode(',', $_GET['ids']));
+		$WHERE.= ($WHERE?" AND ":" WHERE ")."station_id IN (".implode(',', $ids_int_array).")";
+	}
 
 	if (isset($_GET['start']) || isset($_GET['end'])) {
 		$result = $database->query("SELECT * FROM sensors_measurement $WHERE");

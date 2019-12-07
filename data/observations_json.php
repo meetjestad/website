@@ -9,7 +9,7 @@
 	// Output genereren voor openLayers
 	$features = [];
 	while($table = $result->fetch_array(MYSQLI_ASSOC)) {
-		$flora = $database->query("SELECT naam_nl,naam_la,afbeelding,omschrijving,waarnemingen FROM flora WHERE id=".$table["soort_id"]);
+		$flora = $database->query("SELECT naam_nl,naam_la,afbeelding,omschrijving,waarnemingen FROM flora WHERE id=".$database->real_escape_string($table["soort_id"]));
 		$planten = $flora->fetch_array(MYSQLI_ASSOC);
 		$waarnemingen = json_decode($planten["waarnemingen"]);
 
