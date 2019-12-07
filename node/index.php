@@ -108,9 +108,9 @@
 				var series = '';
 				if (selection["temperature"].checked) series+= (series?',':'') + 'temperature';
 				if (selection["humidity"].checked) series+= (series?',':'') + 'humidity';
-<?if ($light) {?>
+<?php if ($light) {?>
 				if (selection["lux"].checked) series+= (series?',':'') + 'lux';
-<?}?>
+<?php } ?>
 				document.getElementById('series').src = 'series.php?id=<?=htmlspecialchars(rawurlencode($id))?>&time='+time+'&series='+series+'&width='+(document.getElementById('paneData').offsetWidth-120);
 			}
 		</script>
@@ -126,23 +126,23 @@
 				<form id="dataSelector">
 					<table>
 						<tr><th colspan="4">Latest&nbsp;measurements</th>
-<?if ($offline) {?>
+<?php if ($offline) {?>
 						<tr><td colspan="4"><i>Warning: node is offline!</i></td>
-<?}?>
+<?php } ?>
 						<tr><td>Temperature</td><td>T</td><td style="text-align:right;"><?=$temperature?></td><td>⁰C</td></tr>
 						<tr><td>Relative Humidity</td><td>Φ</td><td style="text-align:right;"><?=$humidity?></td><td>%</td></tr>
-<?if ($light) {?>
+<?php if ($light) {?>
 						<tr><td>Illuminance</td><td>E</td><td style="text-align:right;"><?=$light?></td><td>lx</td></tr>
-<?}?>
+<?php } ?>
 					</table>
 					<b>Time series</b><br/>
 					<img id="series" style="float:left;" src=""/>
 					<div style="display:inline-block; float:left;">
 						<input type="checkbox" name="temperature" checked="checked" onclick="drawSeries();"/><span style="color:#fb6127;">T</span><br/>
 						<input type="checkbox" name="humidity" onclick="drawSeries();"/><span style="color:#5677fc;">Φ</span><br/>
-<?if ($light) {?>
+<?php if ($light) {?>
 						<input type="checkbox" name="lux" onclick="drawSeries();"/><span style="color:#8f8fbf;">E</span>
-<?}?>
+<?php } ?>
 					</div>
 					<input style="margin-left:40px;" type="radio" name="time" value="1" checked="checked" onclick="drawSeries();"/> 1D
 					<input type="radio" name="time" value="7" onclick="drawSeries();"/> 1W
@@ -177,9 +177,9 @@
 				picture<br/>
 -->
 
-<? if ($setlist) {?>
+<?php if ($setlist) {?>
 					Part of set(s) <select id="setlist"><?=$setlist?></select> <input type="button" value="Go" onclick="window.location=document.getElementById('setlist').value;"/>
-<?}?>
+<?php } ?>
 			</fieldset>
 			<fieldset class="pane">
 				<legend>health</legend>

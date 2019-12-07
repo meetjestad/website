@@ -1,4 +1,4 @@
-<?
+<?php
 	$availableSeries = array(
 		"temperature" => array("color" => "fb6127", "label" => "T[&#176;C]"),
 		"humidity" => array("color" => "5677fc", "label" => "Φ[%]"),
