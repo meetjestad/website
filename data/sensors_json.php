@@ -33,32 +33,37 @@
 		$result = $database->query("SELECT sensors_measurement.* FROM sensors_station INNER JOIN sensors_measurement ON (sensors_station.last_measurement = sensors_measurement.id) $WHERE");
 	}
 
+	$features = [];
 	// exclude data from nodes that lost contact with their sensor
 	while($table = $result->fetch_array(MYSQLI_ASSOC)) if ($table["humidity"]>-26 && $table["temperature"]>-26) {
 		if ($table['longitude'] == 0)
 			continue;
-		if ($json != "[") $json .= ",";
-		$json.= '{"type":"Feature",';
-		$json.= '"properties":{';
-		$json.= '"type":"sensor",';
-		$json.= '"id":"'.$table["station_id"].'",';
-		$json.= '"temperature":"'.$table["temperature"].'",';
-		$json.= '"humidity":"'.$table["humidity"].'",';
-		$json.= '"light":"'.$table["lux"].'",';
-		$json.= '"timestamp_utc":"'.$table["timestamp"].'",';
 		$datetime = DateTime::createFromFormat('Y-m-d H:i:s', $table['timestamp'], new DateTimeZone('UTC'));
 		$datetime->setTimeZone(new DateTImeZone('Europe/Amsterdam'));
-		$json.= '"timestamp":"'.$datetime->format('Y-m-d H:i:s').'",';
-		$json.= '"location": "sensor '.$table["station_id"].'"},';
-		$json.= '"geometry":{';
-		$json.= '"type":"Point",';
-		$json.= '"coordinates":['.$table["longitude"].','.$table["latitude"].']}}';
+		$features[] = [
+			'type' => 'Feature',
+			'properties' => [
+				'type' => 'sensor',
+				'id' => $table["station_id"],
+				'temperature' => $table["temperature"],
+				'humidity' => $table["humidity"],
+				'light' => $table["lux"],
+				'timestamp_utc' => $table["timestamp"],
+				'timestamp' => $datetime->format('Y-m-d H:i:s'),
+				'location' => 'sensor '.$table["station_id"],
+			],
+			'geometry' => [
+				'type' => 'Point',
+				'coordinates' => [floatval($table["longitude"]),floatval($table["latitude"])],
+			],
+		];
 	}
 
-	// end json
-	$json.= ']';
-	$json = '{"type":"FeatureCollection","features":'.$json.'}';
-	
+	$json = json_encode([
+		'type' => 'FeatureCollection',
+		'features' => $features,
+	]);
+
 	// output data
 	header("Access-Control-Allow-Origin: *");
 	header("Content-Type: application/json; charset=UTF-8");

@@ -41,33 +41,38 @@ if (is_string($responses)){
 	$list = $data['responses'];
 
 	// Output genereren voor openLayers
-	$json = "[";
+	$features = [];
 	foreach($list as $item) {
 		$story = reset($item);
 		if ($coordinates = explode(';',$story['LOCKAART'],-1)) {
-			$lat = number_format($coordinates[0], 4) ;
-			$lon = number_format($coordinates[1], 4) ;
+			$lat = round(floatval($coordinates[0]), 4) ;
+			$lon = round(floatval($coordinates[1]), 4);
 		} else {
 			$lat = 0;
 			$lon = 0;
 		}
-		$title = filter_var($story['Title'], FILTER_SANITIZE_STRING);
-		$narrative = filter_var(str_replace(array("\n", "\r")," ",$story['Narrative']), FILTER_SANITIZE_STRING);
+		$title = $story['Title'];
+		$narrative = $story['Narrative'];
 
 		if ($lat && $lon && $title && $narrative) {
-			if ($json != "[") {$json .= ",";}
-			$json.= '{"type":"Feature",';
-			$json.= '"properties":{';
-			$json.= '"type":"story",';
-			$json.= '"title":"'.$title.'",';
-			$json.= '"narrative":"'.$narrative.'"},';
-			$json.= '"geometry":{';
-			$json.= '"type":"Point",';
-			$json.= '"coordinates":['.$lon.','.$lat.']}}';
+			$features[] = [
+				'type' => 'Feature',
+				'properties' => [
+					'type' => 'story',
+					'title' => $title,
+					'narrative' => $narrative,
+				],
+				'geometry' => [
+					'type' => 'Point',
+					'coordinates' => [$lon, $lat],
+				],
+			];
 		}
 	}
-	$json.= ']';
-	$json = '{"type":"FeatureCollection","features":'.$json.'}';
+	$json = json_encode([
+		'type' => 'FeatureCollection',
+		'features' => $features,
+	]);
 
 	header("Access-Control-Allow-Origin: *");
 	header("Content-Type: application/json; charset=UTF-8");
