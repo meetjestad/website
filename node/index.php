@@ -13,14 +13,13 @@
 	$database = Connection();
 
 	include ("healthlib.php");
-
-	$id = $query;
+	$id = intval($query);
 
 	// === get measurements === //
-	$result = $database->query("SELECT * FROM sensors_measurement WHERE station_id='$id' ORDER BY timestamp DESC LIMIT 1");
+	$result = $database->query("SELECT * FROM sensors_measurement WHERE station_id='".$database->real_escape_string($id)."' ORDER BY timestamp DESC LIMIT 1");
 	$row = $result->fetch_array(MYSQLI_ASSOC);
 	if (!$row)
-		die ("Node with id $id not found");
+		die ("Node with id ".htmlspecialchars($id)." not found");
 
 	$timestamp = DateTime::createFromFormat('Y-m-d H:i:s', $row["timestamp"], new DateTimeZone('UTC'));
 	$timestamp->setTimeZone(new DateTImeZone('Europe/Amsterdam'));
@@ -42,7 +41,8 @@
 		$ids = preg_replace_callback('/(\d+)-(\d+)/', function($m) {
 			return implode(',', range($m[1], $m[2]));
 		}, $sensorsets[$setid]['ids']);
-		if (in_array($id, explode(',', $ids))) $setlist.= '<option value="../maps/'.$setid.'">'.$set['description'].'</option>';
+		if (in_array($id, explode(',', $ids)))
+			$setlist.= '<option value="../maps/'.htmlspecialchars($setid).'">'.htmlspecialchars($set['description']).'</option>';
 	}
 ?>
 <!DOCTYPE html>
@@ -51,7 +51,7 @@
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
 		<meta http-equiv="refresh" content="900" />
-		<title>Meet je stad! Node <?=$id?></title>
+		<title>Meet je stad! Node <?=htmlspecialchars($id)?></title>
 		<link rel="icon" href="../images/favicon.png" type="image/x-icon" />
 		<style>
 			body {
@@ -111,7 +111,7 @@
 <?if ($light) {?>
 				if (selection["lux"].checked) series+= (series?',':'') + 'lux';
 <?}?>
-				document.getElementById('series').src = 'series.php?id=<?=$id?>&time='+time+'&series='+series+'&width='+(document.getElementById('paneData').offsetWidth-120);
+				document.getElementById('series').src = 'series.php?id=<?=htmlspecialchars(rawurlencode($id))?>&time='+time+'&series='+series+'&width='+(document.getElementById('paneData').offsetWidth-120);
 			}
 		</script>
 	</head>

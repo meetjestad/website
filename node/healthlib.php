@@ -21,14 +21,14 @@ function health($id, $layout) {
 	global $database;
 
 	// === get measurements === //
-	$latestResult = $database->query("SELECT * FROM sensors_station WHERE id = $id");
+	$latestResult = $database->query("SELECT * FROM sensors_station WHERE id = ".$database->real_escape_string($id));
 	if($latestResult->num_rows === 0) {
 		switch($layout) {
 			case 'table':
 				echo 'no data recorded';
 				break;
 			case 'row':
-				echo '<th>'.$id.'</th><td colspan="5">no data recorded</td>';
+				echo '<th>'.htmlspecialchars($id).'</th><td colspan="5">no data recorded</td>';
 				break;
 			case 'json':
 				echo false;
@@ -42,7 +42,7 @@ function health($id, $layout) {
 
 	if($cacheResult->num_rows === 0 || $latestRow["last_timestamp"] > $cacheRow["timestamp"]) {
 		// do assessment and write to health cache
-		$result = $database->query("SELECT msr.*, msg.message FROM sensors_measurement AS msr LEFT JOIN sensors_message AS msg ON (msg.id = msr.message_id) WHERE msr.station_id = $id ORDER BY msr.timestamp DESC LIMIT 100");
+		$result = $database->query("SELECT msr.*, msg.message FROM sensors_measurement AS msr LEFT JOIN sensors_message AS msg ON (msg.id = msr.message_id) WHERE msr.station_id = ".$database->real_escape_string($id)." ORDER BY msr.timestamp DESC LIMIT 100");
 
 		$rows = 0;
 		$lastfcnt = 0;
@@ -83,7 +83,7 @@ function health($id, $layout) {
 
 		$humhealth = ((1.0 - $percinvalidhum) + (1.0 - $percinvaliddhum) + 0.5*(1.0-$Rtmphum))/3.0;
 
-		$result = $database->query("SELECT * FROM sensors_measurement WHERE station_id = $id ORDER BY timestamp DESC LIMIT 1000");
+		$result = $database->query("SELECT * FROM sensors_measurement WHERE station_id = ".$database->real_escape_string($id)." ORDER BY timestamp DESC LIMIT 1000");
 		$rows = 0;
 		$counthasgps = 0;
 		while($row = $result->fetch_array(MYSQLI_ASSOC)) {
@@ -94,10 +94,14 @@ function health($id, $layout) {
 		$gpscount = $rows;
 
 		if ($cacheResult->num_rows === 0) {
-			$database->query("INSERT INTO sensors_health (id, timestamp, humhealth, perchasgps, radiosuccess, supply, longitude, latitude) VALUES ('$id', '$timestamp', '$humhealth', '$perchasgps', '$radionsuccess', '$supply', '$longitude', '$latitude')");
+			$q = $database->prepare("INSERT INTO sensors_health SET id = ?, timestamp = ?, humhealth = ?, perchasgps = ?, radiosuccess = ?, supply = ?, longitude = ?, latitude = ?");
+			$q->bind_param('isdddddd', $id, $timestamp, $humhealth, $perchasgps, $radionsuccess, $supply, $longitude, $latitude);
+			$q->execute();
 		}
 		else {
-			$database->query("UPDATE sensors_health SET timestamp='$timestamp', humhealth='$humhealth', perchasgps='$perchasgps', radiosuccess='$radionsuccess', supply='$supply', longitude='$longitude', latitude='$latitude' WHERE id = '$id'");
+			$q = $database->prepare("UPDATE sensors_health SET timestamp = ?, humhealth = ?, perchasgps = ?, radiosuccess = ?, supply = ?, longitude = ?, latitude = ?");
+			$q->bind_param('sdddddd', $timestamp, $humhealth, $perchasgps, $radionsuccess, $supply, $longitude, $latitude);
+			$q->execute();
 		}
 	}
 	else {
@@ -155,21 +159,25 @@ function health($id, $layout) {
 		case 'table':
 			echo '<table>';
 			echo '<tr><th colspan="3">Alive</th></tr>';
-			echo '<tr><td style="color:'.$alivelight.';">●</td><td>'.($idletime?'Offline since':'Online').'</td><td>'.($idletime?$idletime:'Seen last hour').'</td></tr>';
+			echo '<tr><td style="color:'.htmlspecialchars($alivelight).';">●</td><td>'.($idletime?'Offline since':'Online').'</td><td>'.($idletime?htmlspecialchars($idletime):'Seen last hour').'</td></tr>';
 			echo '<tr><th colspan="3">Battery</th></tr>';
-			echo '<tr><td style="color:'.$supplylight.';">●</td><td>Voltage</td><td>'.$supply.'V</td></tr>';
+			echo '<tr><td style="color:'.htmlspecialchars($supplylight).';">●</td><td>Voltage</td><td>'.htmlspecialchars($supply).'V</td></tr>';
 			echo '<tr><th colspan="3">Radio</th></tr>';
-			if ($radiosuccess) echo	'<tr><td style="color:'.$radiolight.';">●</td><td>Delivery</td><td>'.round(100.0*$radiosuccess).' % of last '.($fcnt1 - $fcnt2 + 1).' packets</td></tr>';
+			if ($radiosuccess) echo '<tr><td style="color:'.htmlspecialchars($radiolight).';">●</td><td>Delivery</td><td>'.htmlspecialchars(round(100.0*$radiosuccess)).' % of last '.htmlspecialchars($fcnt1 - $fcnt2 + 1).' packets</td></tr>';
 			echo '<tr><th colspan="3">Sensors</th></tr>';
-			echo '<tr><td style="color:'.$gpslight.';">●</td><td>GPS</td><td>'.round(100.0*$perchasgps).' % present in last '.$gpscount.' packets</td></tr>';
-			echo '<tr><td style="color:'.$humiditylight.';">●</td><td>Humidity</td><td>'.round(100.0*$percinvalidhum).' % invalid Φ (&lt;10% or &gt;100%)</td></tr>';
-			echo '<tr><td></td><td></td><td>'.round(100.0*$percinvaliddhum).' % invalid ΔΦ (=0 or &gt;50%)</td></tr>';
-			echo '<tr><td></td><td></td><td>R <sub>TΦ</sub> = '.$Rtmphum.'</td></tr>';
+			echo '<tr><td style="color:'.htmlspecialchars($gpslight).';">●</td><td>GPS</td><td>'.htmlspecialchars(round(100.0*$perchasgps)).' % present in last '.htmlspecialchars($gpscount).' packets</td></tr>';
+			echo '<tr><td style="color:'.htmlspecialchars($humiditylight).';">●</td><td>Humidity</td><td>'.htmlspecialchars(round(100.0*$percinvalidhum)).' % invalid Φ (&lt;10% or &gt;100%)</td></tr>';
+			echo '<tr><td></td><td></td><td>'.round(100.0*htmlspecialchars($percinvaliddhum)).' % invalid ΔΦ (=0 or &gt;50%)</td></tr>';
+			echo '<tr><td></td><td></td><td>R <sub>TΦ</sub> = '.htmlspecialchars($Rtmphum).'</td></tr>';
 			echo '</table>';
 		break;
 		case 'row':
 			//~ echo '<th><a href="node/'.$id.'" target="_blank">'.$id.'</a></th><td><span style="color:'.$alivelight.';">●</span> '.($idletime?$idletime.' ago':'online').'</td><td><span style="color:'.$supplylight.';">●</span> '.$supply.'V</td><td><span style="color:'.$gpslight.';">●</span>'.round(100.0*$perchasgps).' % up</td><td><span style="color:'.$humiditylight.';">●</span>'.($humhealth>=0.75?'ok':($humhealth>=0.5?'moderate':'bad')).'</td><td>'.$position.'</td>';
-			echo '<th><a href="node/'.$id.'" target="_blank">'.$id.'</a></th><td><span style="color:'.$alivelight.';">●</span> '.($idletime?$idletime.' ago':'online').'</td><td><span style="color:'.$supplylight.';">●</span> '.$supply.'V</td><td><span style="color:'.$gpslight.';">●</span>'.round(100.0*$perchasgps).' % up</td><td><span style="color:'.$humiditylight.';">●</span>'.($humhealth>=0.75?'ok':($humhealth>=0.5?'moderate':'bad')).'</td>';
+			echo '<th><a href="node/'.htmlspecialchars($id).'" target="_blank">'.htmlspecialchars($id).'</a></th>';
+			echo '<td><span style="color:'.htmlspecialchars($alivelight).';">●</span>'.($idletime?htmlspecialchars($idletime).' ago':'online').'</td>';
+			echo '<td><span style="color:'.htmlspecialchars($supplylight).';">●</span> '.htmlspecialchars($supply).'V</td>';
+			echo '<td><span style="color:'.htmlspecialchars($gpslight).';">●</span>'.htmlspecialchars(round(100.0*$perchasgps)).' % up</td>';
+			echo '<td><span style="color:'.htmlspecialchars($humiditylight).';">●</span>'.($humhealth>=0.75?'ok':($humhealth>=0.5?'moderate':'bad')).'</td>';
 		break;
 		case 'json':
 			$node = array(

@@ -51,30 +51,24 @@
 		if (!isset($paths[$quantity])) $paths[$quantity] = '';
 		foreach($s[$quantity] as $t => $y) $paths[$quantity].= ($paths[$quantity]?"L":"M").round(($width*($t-$min_t)/($max_t-$min_t))+$margin, 2).",".round($height-$y, 2)." ";
 	}
-
 	$svg = '<?xml version="1.0" encoding="utf-8" standalone="no"?>' . "\n";
 	$svg.= '<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">';
-	$svg.= '<svg width="'.($width+$margin).'px" height="'.$height.'px" id="graph" version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 '.($width+$margin).' '.$height.'" preserveAspectRatio="none" style="font-family:dosis; font-size:12px;">';
+	$svg.= '<svg width="'.htmlspecialchars($width+$margin).'px" height="'.htmlspecialchars($height).'px" id="graph" version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 '.htmlspecialchars($width+$margin).' '.htmlspecialchars($height).'" preserveAspectRatio="none" style="font-family:dosis; font-size:12px;">';
 	$svg.= '<defs><style type="text/css">@font-face {font-family:dosis; src:url(\'../style/fonts/Dosis-Regular.otf\');}</style></defs>';
 
 	// draw border
-	$svg.= '<rect x="'.$margin.'" y="0" width="'.$width.'" height="'.$height.'" vector-effect="non-scaling-stroke" style="fill:white;stroke:black;"></rect>';
+	$svg.= '<rect x="'.htmlspecialchars($margin).'" y="0" width="'.htmlspecialchars($width).'" height="'.htmlspecialchars($height).'" vector-effect="non-scaling-stroke" style="fill:white;stroke:black;"></rect>';
 
 	// draw series
-	foreach($paths as $i => $path) $svg.= '<path vector-effect="non-scaling-stroke" style="fill:none;stroke:#'.$availableSeries[$i]["color"].';" d="'.$path.'"></path>';
+	foreach($paths as $i => $path) $svg.= '<path vector-effect="non-scaling-stroke" style="fill:none;stroke:#'.htmlspecialchars($availableSeries[$i]["color"]).';" d="'.htmlspecialchars($path).'"></path>';
 
 	// draw labels
 	$row = 0;
 	foreach($series as $quantity) {
-		$svg.= '<text x="'.($margin-2).'" y="'.($height-(12*(count($series)-$row-1))).'" style="text-anchor:end; fill:#'.$availableSeries[$quantity]["color"].';">'.round($min_s[$quantity], 1).'</text>';
-		$svg.= '<text x="'.($margin-2).'" y="'.(10+12*$row).'" style="text-anchor:end; fill:#'.$availableSeries[$quantity]["color"].';">'.round($max_s[$quantity], 1).'</text>';
+		$svg.= '<text x="'.htmlspecialchars($margin-2).'" y="'.htmlspecialchars($height-(12*(count($series)-$row-1))).'" style="text-anchor:end; fill:#'.htmlspecialchars($availableSeries[$quantity]["color"]).';">'.htmlspecialchars(round($min_s[$quantity], 1)).'</text>';
+		$svg.= '<text x="'.htmlspecialchars($margin-2).'" y="'.htmlspecialchars(10+12*$row).'" style="text-anchor:end; fill:#'.htmlspecialchars($availableSeries[$quantity]["color"]).';">'.htmlspecialchars(round($max_s[$quantity], 1)).'</text>';
 		$row++;
 	}
-	//~ $svg.= '<text x="'.($width+$margin+6).'" y="'.$height.'" style="text-anchor:start; fill:#'.$col['hum'].';">'.$min_hum.'</text>';
-	//~ $svg.= '<text x="'.($width+$margin+6).'" y="10" style="text-anchor:start; fill:#'.$col['hum'].';">'.$max_hum.'</text>';
-	//~ $svg.= '<text x="'.($width/2+$margin).'" y="'.($height+12).'" style="text-anchor:middle;">'.$time.'</text>';
-	//~ $svg.= '<text x="28" y="'.($height/2).'" style="text-anchor:end; fill:#'.$col['tmp'].';">T[&#176;C]</text>';
-	//~ $svg.= '<text x="'.($width+$margin+6).'" y="'.($height/2).'" style="text-anchor:start; fill:#'.$col['hum'].';">RH [%]</text>';
 	$svg.= '</svg>';
 
 	header('Content-type: image/svg+xml');
