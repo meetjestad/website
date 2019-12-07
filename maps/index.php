@@ -6,7 +6,6 @@
 	// request (which then matches the prefix of PHP_SELF).
 	$uri = isset($_SERVER["REDIRECT_URL"]) ? $_SERVER["REDIRECT_URL"] : $_SERVER["REQUEST_URI"];
 	$query = explode('/', substr(strtok($uri, '?'), strlen($path)));
-//	$query = strpos(substr($_SERVER["REQUEST_URI"], strlen($_path)), '?');
 
 
 	$lang = isset($_GET['lang']) ? $_GET['lang'] : 'nl';
@@ -24,28 +23,10 @@
 	}
 	else $dataSelection = 'select=all';
 
-//~ echo $query[0].'<br/>';
-//~ echo $dataSelection;
-//~ exit;
-	//~ $dataSelection = '';
-	//~ if (isset($_GET['layer'])) {
-		//~ $layer = $_GET['layer'];
-		//~ switch($layer) {
-			//~ case 'hittekaart':
-				//~ if (isset($_GET['start']) && $_GET['start']) $dataSelection.= ($dataSelection?'&':'?').'start='.urldecode($_GET['start']);
-				//~ if (isset($_GET['end']) && $_GET['end']) $dataSelection.= ($dataSelection?'&':'?').'end='.urldecode($_GET['end']);
-				//~ if(isset($_GET['ids']) && $_GET['ids']) $dataSelection.= ($dataSelection?'&':'?').'ids='.preg_replace_callback('/(\d+)-(\d+)/', function($m) { return implode(',', range($m[1], $m[2]));}, urldecode($_GET['ids']));
-				//~ break;
-		//~ }
-	//~ }
 ?>
 <!DOCTYPE html>
 <html>
 	<head>
-<!--
-		<meta charset="utf-8">
-		<meta http-equiv="X-UA-Compatible" content="chrome=1">
--->
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 		<meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
 		<title>Meet je stad!</title>
