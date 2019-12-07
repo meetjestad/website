@@ -1,6 +1,4 @@
 <?
-	error_reporting(E_ALL & ~E_NOTICE);
-
 	require('../connect.php');
 	$database = Connection();
 

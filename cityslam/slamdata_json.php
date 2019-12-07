@@ -1,7 +1,4 @@
 <?
-	ini_set('display_errors', 1);
-	error_reporting(E_ALL);
-
 	// http://www.movable-type.co.uk/scripts/latlong.html
 	function distance($p, $q) {
 		$R = 6371e3; // metres
