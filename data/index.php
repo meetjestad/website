@@ -119,7 +119,7 @@
 				$query = "SELECT * FROM sensors_measurement".$WHERE.$SORT;
 				$results = $database->query($query, MYSQLI_USE_RESULT) or die(mysqli_error($database)); ;
 
-				echoTableRow(array("id", "timestamp", "longitude", "latitude", "temperature", "humidity", "lux", "supply", "pm2.5", "pm10", "extra"));
+				echoTableRow(array("id", "timestamp", "longitude", "latitude", "temperature", "humidity", "lux", "supply", "pm2.5", "pm10", "firmware_version", "extra"));
 
 				while(($result = $results->fetch_array(MYSQLI_ASSOC)) != false) {
 					// No valid position is encoded in the
@@ -130,7 +130,7 @@
 						$result['latitude'] = '';
 					if ($result['longitude'] == 0)
 						$result['longitude'] = '';
-					echoTableRow(array($result["station_id"], $result["timestamp"], $result["longitude"], $result["latitude"], $result["temperature"], $result["humidity"], $result["lux"], $result["supply"], $result["pm2_5"], $result["pm10"], $result["extra"]));
+					echoTableRow(array($result["station_id"], $result["timestamp"], $result["longitude"], $result["latitude"], $result["temperature"], $result["humidity"], $result["lux"], $result["supply"], $result["pm2_5"], $result["pm10"], $result["firmware_version"], $result["extra"]));
 					ob_flush();
 					flush();
 				}
