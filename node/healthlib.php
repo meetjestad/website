@@ -46,6 +46,8 @@ function health($id, $layout) {
 
 		$rows = 0;
 		$lastfcnt = 0;
+		$fcnt1 = 0;
+		$fcnt2 = 0;
 		while($row = $result->fetch_array(MYSQLI_ASSOC)) {
 			if ($rows==0) { // most recent message
 				$timestamp = $row["timestamp"];
@@ -113,6 +115,13 @@ function health($id, $layout) {
 		$supply = $cacheRow["supply"];
 		$longitude = $cacheRow["longitude"];
 		$latitude = $cacheRow["latitude"];
+		// TODO: Put this value in the cache
+		$fcnt1 = 0;
+		$fcnt2 = 0;
+		$gpscount = 0;
+		$percinvalidhum = 0;
+		$percinvaliddhum = 0;
+		$Rtmphum = 0;
 	}
 
 	$lastseen = DateTime::createFromFormat('Y-m-d H:i:s', $timestamp, new DateTimeZone('UTC'));
