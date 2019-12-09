@@ -25,7 +25,7 @@
 		$WHERE = "WHERE timestamp >= '$time'";
 	}
 	if (isset($_GET['ids'])) {
-		$ids_int_array = array_map(intval, explode(',', $_GET['ids']));
+		$ids_int_array = array_map('intval', explode(',', $_GET['ids']));
 		$WHERE.= ($WHERE?" AND ":" WHERE ")."station_id IN (".implode(',', $ids_int_array).")";
 	}
 

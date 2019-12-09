@@ -113,7 +113,7 @@
 				$WHERE = "";
 				if ($start) $WHERE.= " WHERE timestamp >= '" . $database->real_escape_string($start) . "'";
 				if ($end) $WHERE.= ($WHERE?" AND ":" WHERE ")."timestamp <= '" . $database->real_escape_string($end) . "'";
-				$ids_int_array = array_map(intval, explode(',', $ids));
+				$ids_int_array = array_map('intval', explode(',', $ids));
 				if ($ids) $WHERE.= ($WHERE?" AND ":" WHERE ")."station_id IN (" . implode(',', $ids_int_array) . ")";
 				$SORT = ' ORDER BY timestamp ASC';
 				$query = "SELECT * FROM sensors_measurement".$WHERE.$SORT;
