@@ -142,19 +142,19 @@
 				if ($start) $WHERE.= " WHERE datum >= '" . $database->real_escape_string($start) . "'";
 				if ($end) $WHERE.= ($WHERE?" AND ":" WHERE ")."datum <= '" . $database->real_escape_string($end) . "'";
 
-				$query = "SELECT soort_id,waarneming_id,datum,locatie,omschrijving FROM flora_observaties".$WHERE;
+				$query = "SELECT obs.waarneming_id,obs.datum,obs.locatie,obs.omschrijving,
+					         flora.naam_nl,flora.naam_la,flora.waarnemingen
+					  FROM flora_observaties AS obs JOIN flora ON (flora.id = soort_id)".$WHERE;
 				$results = $database->query($query, MYSQLI_USE_RESULT);
 
 				echoTableRow(array("datum", "longitude", "latitude", "soort_nl", "soort_la", "waarneming", "notitie"));
 
 				while($result = $results->fetch_array(MYSQLI_ASSOC)) {
-					$flora = $database->query("SELECT naam_nl,naam_la,afbeelding,omschrijving,waarnemingen FROM flora WHERE id=".$database->real_escape_string($result["soort_id"]));
-					$species = $flora->fetch_array(MYSQLI_ASSOC);
-					$waarnemingen = json_decode($species["waarnemingen"]);
+					$waarnemingen = json_decode($result["waarnemingen"]);
 					$omschrijving = filter_var(str_replace(array("\n", "\r", "\t")," ",$result['omschrijving']), FILTER_SANITIZE_STRING);
 					$locatie = explode(',', $result["locatie"]);
 
-					echoTableRow(array($result["datum"], $locatie[0], $locatie[1], $species["naam_nl"], $species["naam_la"], $waarnemingen[$result["waarneming_id"]], $omschrijving));
+					echoTableRow(array($result["datum"], $locatie[0], $locatie[1], $result["naam_nl"], $result["naam_la"], $waarnemingen[$result["waarneming_id"]], $omschrijving));
 				}
 				break;
 			case 'stories':
