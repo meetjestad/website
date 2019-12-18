@@ -322,7 +322,7 @@
 				}
 				$stationcount = count($stations);
 				$url = '?gateways=' . urlencode($gw_id) . '&show_other_gateways=1';
-				echo("<tr><td>".htmlspecialchars($gw)." (<a href=\"".htmlspecialchars($url)."\">filter</a>)</td><td>".htmlspecialchars($messagecount)."</td><td>".htmlspecialchars($stationcount)."</td><td>".htmlspecialchars($stationlist)."</td></tr>\n");
+				echo("<tr><td>".htmlspecialchars($gw)." (<a href=\"".htmlspecialchars($url)."\">filter</a>)</td><td>".htmlspecialchars($messagecount)."</td><td>".htmlspecialchars($stationcount)."</td><td>".$stationlist."</td></tr>\n");
 			}
 		?>
 		</table>
