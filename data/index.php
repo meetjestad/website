@@ -203,7 +203,17 @@
 				margin-bottom:0px;
 			}
 			fieldset {
+				width: 100%;
+			}
+			#mainForm {
 				width: 360px;
+			}
+			#manual {
+				display: inline-block;
+				float: left;
+			}
+			.code {
+				font-family: monospace;
 			}
 			::-webkit-input-placeholder {
 				font-style: italic;
@@ -218,7 +228,7 @@
 				font-style: italic;
 			}
 			#datalogo {
-				width: 40%;
+				width: 100%;
 			}
 			@font-face {
 				font-family: Dosis;
@@ -246,18 +256,19 @@
 <?php if (!array_key_exists('nohome', $_GET)) { ?>
 		<a id="homelink" class="menuDefault" href="/">&lt;HOME</a>
 <?php } ?>
-		<form method="get" target="_blank">
-			<!-- set this value to 0 to suppress the
-			content-disposition header and allow the browser to
-			show the file contents rather than prompting a "save
-			as..." dialog. -->
-			<input type="hidden" name="download" value="1">
-			<img id="datalogo" src="../images/logo_dataloket.png"><br/>
-			All data from Meet je stad is made available as <a href="https://opendatacommons.org/licenses/odbl/summary/">open data</a>.<br/> Using the data or interpretations thereof is at ones own risk.<br/> For more information, read the licenses for the <a href="http://opendatacommons.org/licenses/odbl/1.0/">database</a> and its <a href="http://opendatacommons.org/licenses/dbcl/1.0/">content</a>.
-			<h3>1. Choose data type</h3>
-			<input type="radio" name="type" value="sensors" onclick="document.getElementById('sensors').style.display='block'; document.getElementById('xml').style.display='block';" checked="checked"/> Measurements
-			<input type="radio" name="type" value="observations" onclick="document.getElementById('sensors').style.display='none'; document.getElementById('xml').style.display='block';"/> Observations
-			<input type="radio" name="type" value="stories" onclick="document.getElementById('sensors').style.display='none'; document.getElementById('xml').style.display='none'; document.getElementById('json').selected='selected';"/> Stories
+		<div id="mainForm">
+			<form method="get" target="_blank">
+				<!-- set this value to 0 to suppress the
+				content-disposition header and allow the browser to
+				show the file contents rather than prompting a "save
+				as..." dialog. -->
+				<input type="hidden" name="download" value="1">
+				<img id="datalogo" src="../images/logo_dataloket.png"><br/>
+				All data from Meet je stad is made available as <a href="https://opendatacommons.org/licenses/odbl/summary/">open data</a>.<br/> Using the data or interpretations thereof is at ones own risk.<br/> For more information, read the licenses for the <a href="http://opendatacommons.org/licenses/odbl/1.0/">database</a> and its <a href="http://opendatacommons.org/licenses/dbcl/1.0/">content</a>.
+				<h3>1. Choose data type</h3>
+				<input type="radio" name="type" value="sensors" onclick="document.getElementById('sensors').style.display='block'; document.getElementById('xml').style.display='block';" checked="checked"/> Measurements
+				<input type="radio" name="type" value="observations" onclick="document.getElementById('sensors').style.display='none'; document.getElementById('xml').style.display='block';"/> Observations
+				<input type="radio" name="type" value="stories" onclick="document.getElementById('sensors').style.display='none'; document.getElementById('xml').style.display='none'; document.getElementById('json').selected='selected';"/> Stories
 
 <!--
 			<h3>2. Kies experiment</h3>
@@ -272,35 +283,75 @@
 
 			<h3>3. Maak selectie (optioneel)</h3>
 -->
-			<h3>2. Apply filter (optional)</h3>
-			<fieldset>
-				<legend>Period</legend>
-				from <input type="text" name="start" id="start" placeholder="2016-12-31,12:00" style="width:100px;"/> to <input type="text" name="end" id="end" placeholder="2017-01-01,12:00" style="width:100px;"/>
-			</fieldset>
-			<fieldset id="sensors">
-				<legend>Sensor(s)</legend>
-				enter one or more ids...
-				<select onchange="selectSet(this.value);">
-					<option selected="selected" disabled="disabled">...or choose a dataset</option>
+				<h3>2. Apply filter (optional)</h3>
+				<fieldset>
+					<legend>Period</legend>
+					from <input type="text" name="start" id="start" placeholder="2016-12-31,12:00" style="width:100px;"/> to <input type="text" name="end" id="end" placeholder="2017-01-01,12:00" style="width:100px;"/>
+				</fieldset>
+				<fieldset id="sensors">
+					<legend>Sensor(s)</legend>
+					enter one or more ids...
+					<select onchange="selectSet(this.value);">
+						<option selected="selected" disabled="disabled">...or choose a dataset</option>
 <?
 	foreach($sensorsets as $id => $set) echo '<option value="'.htmlspecialchars($id).'">'.htmlspecialchars($set['description']).'</option>';
 ?>
-				</select><br/>
-				<input type="text" name="ids" id="idlist" placeholder="2,5,19-23" style="width:330px; margin-top:5px;"/>
-			</fieldset>
+					</select><br/>
+					<input type="text" name="ids" id="idlist" placeholder="2,5,19-23" style="width:330px; margin-top:5px;"/>
+				</fieldset>
 
-			<h3>3. Download data or generate map</h3>
-			<fieldset id="data">
-				<legend>Data</legend>
-				<input type="checkbox" name="comma"/>Use comma as decimal separator<br/>
-				<input type="submit" name="cmd" value="download CSV"/>
-				<input type="submit" name="cmd" value="download JSON"/>
-			</fieldset>
-			<fieldset id="map">
-				<legend>Map</legend>
-				<input type="submit" name="cmd" value="show heatmap"/>
-			</fieldset>
-		</form>
+				<h3>3. Download data or generate map</h3>
+				<fieldset id="data">
+					<legend>Data</legend>
+					<input type="checkbox" name="comma"/>Use comma as decimal separator<br/>
+					<input type="submit" name="cmd" value="download CSV"/>
+					<input type="submit" name="cmd" value="download JSON"/>
+				</fieldset>
+				<fieldset>
+					<legend>Map</legend>
+					<input type="submit" name="cmd" value="show heatmap"/>
+				</fieldset>
+			</form>
+		</div>
+		<div id="manual">
+<h3>Direct query</h3><br/>
+You can query the database directly using the following query (GET request):<br/>
+<br/>
+<div class="code">https://meetjestad.net/data/?type=[sensors|flora|stories]&amp;format=[csv|json]&amp;limit=XXX</div>
+<br/>
+The server will offer a file for download containing the Meet je Stad data.<br/>
+<br/>
+<b>Attributes</b><br/>
+The <b>format</b> attribute selects how to pack the data.<br/>
+<ol>
+<li>Use <b>csv</b> if you want to have a tab separated file for easy import in a spreadsheet or statistics tool.</li>
+<li>Using <b>json</b> is convenient if you want to further process the data in a programming language, e.g. Python, PHP or Javascript.</li>
+<li><b>sql</b> can be used if you want to help develop the website and need a local dataset to query.</li>
+</ol>
+The <b>type</b> attribute defines which kind of data to download:<br/>
+<ol>
+<li><b>sensors</b> selects measurements done by the Meet je Stad sensor stations</li>
+<li><b>flora</b> selects flora observations put in through the website</li>
+<li><b>stories</b> selects the stories database. Please note that CSV export is not possible for stories.</li>
+</ol>
+The <b>limit</b> attribute defines the number of rows to return. Setting it to ALL will return all data. Be careful though not to download more data than needed to prevent excessive server load.<br/>
+<br>
+<b>Time series</b><br/>
+Data can be narrowed down to a number of nodes and a specific time window by adding <b>begin</b> and <b>end</b> attributes to the query, denoted as yyyy-mm-dd,hh:mm. E.g. begin=2017-11-16,12:00 will return data beginning 16th of November 2017 at noon. Times are specified in the UTC timezone.<br/>
+<br/>
+<b>Sensor sets</b><br/>
+When sensordata is queried the <b>ids</b> attribute can be used to get data of a single node or a set of nodes. A comma separates the node numbers. A minus symbol can be used to get a range. E.g. ids=1,3-5,8 will return data for the nodes 1, 3, 4, 5 and 8.<br/>
+<br/>
+<b>Examples</b><br/>
+Get latest measurement for a single node as a json record<br/>
+<div class="code">https://meetjestad.net/data/?type=sensors&amp;ids=24&amp;format=json&amp;limit=1</div>
+<br/>
+Download a two day time series for a single node as a csv table<br/>
+<div class="code">https://meetjestad.net/data/?type=sensors&amp;ids=24&amp;begin=2017-11-16,00:00&amp;end=2017-11-18,00:00&amp;format=csv&amp;limit=100</div>
+<br/>
+Download a data to create a heat map for a certain set of sensors<br/>
+<div class="code">https://meetjestad.net/data/?type=sensors&amp;ids=11,14,19,26,31,37,41,47&amp;begin=2017-11-16,12:00&amp;end=2017-11-16,12:15&amp;format=json&amp;limit=100</div>
+		</div>
 		<script>
 		var startDate,
 			endDate,
