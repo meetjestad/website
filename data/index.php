@@ -29,6 +29,8 @@
 			break;
 	}
 
+	$limit = isset($_GET['limit']) ? $_GET['limit'] : false;
+
 	function echoTableRow($data) {
 		global $format;
 		global $comma;
@@ -115,8 +117,9 @@
 				if ($end) $WHERE.= ($WHERE?" AND ":" WHERE ")."timestamp <= '" . $database->real_escape_string($end) . "'";
 				$ids_int_array = array_map('intval', explode(',', $ids));
 				if ($ids) $WHERE.= ($WHERE?" AND ":" WHERE ")."station_id IN (" . implode(',', $ids_int_array) . ")";
-				$SORT = ' ORDER BY timestamp ASC';
-				$query = "SELECT * FROM sensors_measurement".$WHERE.$SORT;
+				$SORT = " ORDER BY timestamp ".($limit ? "DESC" : "ASC");
+				$LIMIT = $limit ? " LIMIT ".$limit : "";
+				$query = "SELECT * FROM sensors_measurement".$WHERE.$SORT.$LIMIT;
 				$results = $database->query($query, MYSQLI_USE_RESULT) or die(mysqli_error($database)); ;
 
 				echoTableRow(array("id", "timestamp", "longitude", "latitude", "temperature", "humidity", "lux", "supply", "pm2.5", "pm10", "firmware_version", "extra"));
