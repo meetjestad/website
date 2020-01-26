@@ -26,7 +26,7 @@
 			],
 			'geometry' => [
 				'type' => 'Point',
-				'coordinates' => array_map(floatval, explode(',', $table["locatie"])),
+				'coordinates' => array_map('floatval', explode(',', $table["locatie"])),
 			],
 		];
 	}
