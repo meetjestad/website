@@ -30,7 +30,7 @@
 
 	header('Content-Type: text/html; charset=utf-8');
 
-	if (file_exists('sensorsets.json')) $sensorsets = json_decode(file_get_contents('sensorsets.json'), true);
+	if (file_exists('../sensorsets.json')) $sensorsets = json_decode(file_get_contents('../sensorsets.json'), true);
 	else $sensorsets = array();
 ?>
 <!DOCTYPE html>
