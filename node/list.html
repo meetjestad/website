@@ -222,10 +222,16 @@
 				var minLon, minLat, maxLon, maxLat;
 				var row;
 
-				for (i=0; i<ids.length; i++) {
-					ajax('health.php?id='+ids[i]+'&layout=json', function(response) {
+				ids.forEach(function(id) {
+					ajax('health.php?id='+id+'&layout=json', function(response) {
 						if (response) {
-							var json = JSON.parse(response);
+							var json;
+							try {
+								json = JSON.parse(response);
+							} catch (err) {
+								console.log("Failed to parse JSON for node " + id + ": " + err);
+								return;
+							}
 							if (json.id == undefined)
 								return; // Unknown node
 
@@ -259,7 +265,7 @@
 							map.renderSync();
 						}
 					});
-				}
+				});
 			}
 		</script>
 	</body>
