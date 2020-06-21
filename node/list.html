@@ -226,6 +226,8 @@
 					ajax('health.php?id='+ids[i]+'&layout=json', function(response) {
 						if (response) {
 							var json = JSON.parse(response);
+							if (json.id == undefined)
+								return; // Unknown node
 
 							row = document.createElement('div');
 							row.setAttribute('id', 'row' + json.id);

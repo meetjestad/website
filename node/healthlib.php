@@ -31,10 +31,10 @@ function health($id, $layout) {
 				echo '<th>'.htmlspecialchars($id).'</th><td colspan="5">no data recorded</td>';
 				break;
 			case 'json':
-				echo false;
+				echo json_encode(array('status' => 'no data recorded'));
 				break;
 		}
-		exit;
+		return;
 	}
 	$latestRow = $latestResult->fetch_array(MYSQLI_ASSOC);
 	$cacheResult = $database->query("SELECT * FROM sensors_health WHERE id = $id");
