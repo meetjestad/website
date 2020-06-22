@@ -115,9 +115,10 @@ function health($id, $layout) {
 		}
 		$perchasgps = $counthasgps/$rows;
 		$gpscount = $rows;
+		$radiocount = $fcnt1 - $fcnt2 + 1;
 
-		$q = $database->prepare("REPLACE INTO sensors_health SET id = ?, last_seen = ?, humhealth = ?, perchasgps = ?, radiosuccess = ?, supply = ?, longitude = ?, latitude = ?");
-		$q->bind_param('isdddddd', $id, $last_seen, $humhealth, $perchasgps, $radiosuccess, $supply, $longitude, $latitude);
+		$q = $database->prepare("REPLACE INTO sensors_health SET id = ?, last_seen = ?, humhealth = ?, perchasgps = ?, radiosuccess = ?, supply = ?, longitude = ?, latitude = ?, radiocount = ?, gpscount = ?, percinvalidhum = ?, percinvaliddhum = ?, Rtmphum = ?");
+		$q->bind_param('isddddddiiddd', $id, $last_seen, $humhealth, $perchasgps, $radiosuccess, $supply, $longitude, $latitude, $radiocount, $gpscount, $percinvalidhum, $percinvaliddhum, $Rtmphum);
 		$q->execute();
 		$fromcache = false;
 	}
@@ -130,14 +131,12 @@ function health($id, $layout) {
 		$supply = $cacheRow["supply"];
 		$longitude = $cacheRow["longitude"];
 		$latitude = $cacheRow["latitude"];
+		$radiocount = $cacheRow["radiocount"];;
+		$gpscount = $cacheRow["gpscount"];;
+		$percinvalidhum = $cacheRow["percinvalidhum"];;
+		$percinvaliddhum = $cacheRow["percinvaliddhum"];;
+		$Rtmphum = $cacheRow["Rtmphum"];;
 		$fromcache = true;
-		// TODO: Put this value in the cache
-		$fcnt1 = 0;
-		$fcnt2 = 0;
-		$gpscount = 0;
-		$percinvalidhum = 0;
-		$percinvaliddhum = 0;
-		$Rtmphum = 0;
 	}
 
 
@@ -188,7 +187,7 @@ function health($id, $layout) {
 			echo '<tr><th colspan="3">Battery</th></tr>';
 			echo '<tr><td style="color:'.htmlspecialchars($supplylight).';">●</td><td>Voltage</td><td>'.htmlspecialchars($supply).'V</td></tr>';
 			echo '<tr><th colspan="3">Radio</th></tr>';
-			if ($radiosuccess) echo '<tr><td style="color:'.htmlspecialchars($radiolight).';">●</td><td>Delivery</td><td>'.htmlspecialchars(round(100.0*$radiosuccess)).' % of last '.htmlspecialchars($fcnt1 - $fcnt2 + 1).' packets</td></tr>';
+			if ($radiosuccess) echo '<tr><td style="color:'.htmlspecialchars($radiolight).';">●</td><td>Delivery</td><td>'.htmlspecialchars(round(100.0*$radiosuccess)).' % of last '.htmlspecialchars($radiocount).' packets</td></tr>';
 			echo '<tr><th colspan="3">Sensors</th></tr>';
 			echo '<tr><td style="color:'.htmlspecialchars($gpslight).';">●</td><td>GPS</td><td>'.htmlspecialchars(round(100.0*$perchasgps)).' % present in last '.htmlspecialchars($gpscount).' packets</td></tr>';
 			echo '<tr><td style="color:'.htmlspecialchars($humiditylight).';">●</td><td>Humidity</td><td>'.htmlspecialchars(round(100.0*$percinvalidhum)).' % invalid Φ (&lt;10% or &gt;100%)</td></tr>';
