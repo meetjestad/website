@@ -14,7 +14,10 @@
 			$sum_a_sqr += pow($a[$i], 2);
 			$sum_b_sqr += pow($b[$i], 2);
 		}
-		return ($sum_ab/$n - $sum_a/$n * $sum_b/$n) / (sqrt($sum_a_sqr/$n - pow($sum_a/$n, 2)) * sqrt($sum_b_sqr/$n - pow($sum_b/$n, 2)));
+		$div = sqrt($sum_a_sqr/$n - pow($sum_a/$n, 2)) * sqrt($sum_b_sqr/$n - pow($sum_b/$n, 2));
+		if ($div == 0)
+			return 1; // No deviation in one of the variables, not good
+		return ($sum_ab/$n - $sum_a/$n * $sum_b/$n) / $div;
 	}
 
 function health($id, $layout) {
@@ -71,19 +74,26 @@ function health($id, $layout) {
 		}
 		else $radiosuccess = '';
 
-		// Assess humidity sensor health
-		$countinvalidhum = 0;
-		$countinvaliddhum = 0;
-		for($i=0; $i<count($hum); $i++) {
-			if ($hum[$i]<10.0 || $hum[$i]>100.0) $countinvalidhum++;
-			if ($i>0) if (abs($hum[$i]-$hum[$i-1])==0 || abs($hum[$i]-$hum[$i-1])>50.0) $countinvaliddhum++;
+		if (count($tmp) > 1 && count($hum) > 1) {
+			// Assess humidity sensor health
+			$countinvalidhum = 0;
+			$countinvaliddhum = 0;
+			for($i=0; $i<count($hum); $i++) {
+				if ($hum[$i]<10.0 || $hum[$i]>100.0) $countinvalidhum++;
+				if ($i>0) if (abs($hum[$i]-$hum[$i-1])==0 || abs($hum[$i]-$hum[$i-1])>50.0) $countinvaliddhum++;
+			}
+			$percinvalidhum = $countinvalidhum/count($hum);
+			$percinvaliddhum = $countinvaliddhum/(count($hum)-1);
+
+			$Rtmphum = round(corr($tmp, $hum), 2);
+
+			$humhealth = ((1.0 - $percinvalidhum) + (1.0 - $percinvaliddhum) + 0.5*(1.0-$Rtmphum))/3.0;
+		} else {
+			$Rtmphum = 0;
+			$humhealth = 0;
+			$percinvalidhum = 0;
+			$percinvaliddhum = 0;
 		}
-		$percinvalidhum = $countinvalidhum/count($hum);
-		$percinvaliddhum = $countinvaliddhum/(count($hum)-1);
-
-		$Rtmphum = round(corr($tmp, $hum), 2);
-
-		$humhealth = ((1.0 - $percinvalidhum) + (1.0 - $percinvaliddhum) + 0.5*(1.0-$Rtmphum))/3.0;
 
 		$result = $database->query("SELECT * FROM sensors_measurement WHERE station_id = ".$database->real_escape_string($id)." ORDER BY timestamp DESC LIMIT 1000");
 		$rows = 0;
