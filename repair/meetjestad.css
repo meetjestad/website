@@ -1,0 +1,203 @@
+html, body {
+	margin: 0;
+	padding: 0;
+	width: 100%;
+	height: 100%;
+	font-family: Dosis;
+	font-size: 12pt;
+	text-align: justify;
+}
+a {
+	font-weight: bold;
+}
+td, th {
+	text-align: justify;
+	vertical-align: top;
+}
+#map {
+	margin: 0;
+	padding: 0;
+/*
+	overflow: hidden;
+*/
+	width: 100%;
+	height: 100%;
+	z-index: 0;
+}
+#menu {
+	position: absolute;
+	top: 0px;
+	width: 100%;
+	text-align: center;
+	z-index: 9999;
+}
+#menuIcon {
+	position: absolute;
+	right: 10px;
+	top: 10px;
+	width: 42px;
+	height: 42px;
+	z-index: 9999;
+	cursor: pointer;
+}
+#logo {
+	position: absolute;
+	left: 10px;
+	bottom: 10px;
+	width: 15%;
+	z-index: 9999;
+}
+#legend {
+	position:absolute;
+	left:0px;
+	top:200px;
+	bottom:200px;
+	padding:4px;
+	border:1px solid black;
+	background-color:#eee;
+	opacity:0.8;
+	visibility:hidden;
+	z-index: 9999;
+}
+menu {
+	display: inline-block;
+	width: 140px;
+	height: 30px;
+	text-align: center;
+	line-height: 30px;
+	padding-left: 4px;
+	padding-right: 4px;
+	margin: 5px;
+	border-radius: 2px;
+	cursor: pointer;
+	font-size: 15pt;
+}
+.menuDefault {
+	background-color: #0000bf;
+	color: #cfcf00;
+	font-weight: bold;
+	border: 1px solid #00008f;
+	letter-spacing: 0.1em;
+}
+.menuSelected {
+	background-color: #ffefef;
+	color: #000000;
+	font-weight: bold;
+	border: 1px solid #00008f;
+	letter-spacing: 0.15em;
+}
+div.ol-zoom {
+	top: 40px;
+}
+.ol-popup-content {
+    min-width: 170px;
+    max-height: 360px;
+    overflow-x: auto;
+}
+.layer-switcher button {
+	background-image: url("../images/layers.png");
+}
+@font-face {
+	font-family: Dosis;
+	src: url('fonts/Dosis-Regular.otf');
+}
+@font-face {
+	font-family: Dosis;
+	src: url('fonts/Dosis-Bold.otf');
+	font-weight: bold;
+}
+
+.FAQ {
+	clear: left;
+	display: block;
+}
+.list {
+	display: none;
+	float: left;
+}
+.show {
+	display: none;
+}
+.hide:target + .show {
+	display: inline;
+}
+.hide:target {
+	display: none;
+}
+.hide:target ~ .list {
+	display:inline;
+}
+
+/*style the (+) and (-) */
+.hide, .show {
+	width: 20px;
+	text-decoration: none;
+	font-weight: bold;
+	float: left;
+}
+.question {
+	float: left;
+	font-weight: bold;
+}
+
+@media (min-width: 961px) {
+	menu {
+		display: inline;
+	}
+	#menu {
+		display: block;
+	}
+	#menuIcon {
+		display: none;
+	}
+	#frame {
+		position: absolute;
+		top: 40px;
+		width: 100%;
+		text-align: center;
+		z-index: 9999;
+		display: none;
+	}
+	article {
+		display: inline-block;
+		width: 800px;
+		height: 480px;
+		overflow: auto;
+		text-align: left;
+		background-color: #ffefef;
+		padding: 5px;
+		border: 1px solid #00008f;
+		z-index: 9999;
+		visibility: hidden;
+	}
+}
+
+@media (max-width: 961px) {
+	menu {
+		display: block;
+	}
+	#menu {
+		display: none;
+		width: 200px;
+		text-align: center;
+	}
+	#menuIcon {
+		display: block;
+	}
+	#frame {
+	  position: absolute;
+	  top: 40px;
+	  width: 90%;
+	  text-align: center;
+	  z-index: 9999;
+	  display: none;
+	}
+	article {
+		display: inline-block;
+		text-align: left;
+		background-color: #ffefef;
+		padding: 5px;
+		z-index: 9999;
+		visibility: hidden;
+	}
+}

@@ -219,5 +219,19 @@ function health($id, $layout) {
 			);
 			echo json_encode($node);
 		break;
+		case'array':
+			return array(
+				"id"=>$id,
+				"idletime"=>$idletime,
+				"alivelight"=>$alivelight,
+				"supply"=>$supply,
+				"supplylight"=>$supplylight,
+				"perchasgps"=>$perchasgps,
+				"gpslight"=>$gpslight,
+				"humhealth"=>$humhealth,
+				"humiditylight"=>$humiditylight,
+				"position"=>array("lon"=>$longitude, "lat"=>$latitude),
+				"fromcache"=>$fromcache,
+			);
 	}
 }
