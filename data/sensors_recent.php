@@ -37,10 +37,13 @@
 <html class="no-js">
 	<head>
 		<meta http-equiv="refresh" content="60">
+		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+
 	</head>
 	<body>
-		<table border="1">
-			<tr>
+		<img style="width: 200px; padding: 10px;" src="https://meetjestad.nl/images/5dc94f60a26fc.png" alt="" />
+		<table class="table table-bordered table-striped table-sm" style="width: calc(100% - 20px); margin: 10px">
+			<tr class="bg-info">
 				<th>ID</th>
 				<th>Time</th>
 				<th>Temp</th>
@@ -276,11 +279,10 @@
 	}
 	?>
 		</table>
-		<p>Message count: <?= $messagecount ?></p>
-		<p>Node count: <?= count($count_per_station)?></p>
-		<p><b>Messages per node</b></p>
-		<table border="1">
-		<tr><th>Number of messages in list above</th><th>Nodes</th></tr>
+		<p>Message count: <?= $messagecount ?><br>Node count: <?= count($count_per_station)?></p>
+		<p><h3>Messages per node</h3></p>
+		<table class="table table-bordered table-striped table-sm" style="width: calc(100% - 20px); margin: 10px">
+		<tr class="bg-info"><th>Number of messages in list above</th><th>Nodes</th></tr>
 		<?php
 			$stations_per_count = array();
 			foreach($count_per_station as $station => $count) {
@@ -297,9 +299,9 @@
 		?>
 		</table>
 
-		<p><b>Statistics per gateway</b></p>
-		<table border="1">
-		<tr><th>Gateway</th><th>Number of messages</th><th>Number of nodes</th><th>Nodes</th></tr>
+	<p><h3>Statistics per gateway</h3></p>
+		<table class="table table-bordered table-striped table-sm" style="width: calc(100% - 20px); margin: 10px">
+		<tr class="bg-info"><th>Gateway</th><th>Number of messages</th><th>Number of nodes</th><th>Nodes</th></tr>
 		<?php
 			arsort($messagecount_per_gateway);
 			foreach($messagecount_per_gateway as $gw_id => $messagecount) {
@@ -326,7 +328,7 @@
 			}
 		?>
 		</table>
-		<p><b>Filter by dataset</b></p>
+		<p><h3>Filter by dataset</h3></p>
 		<ul>
 		<?php foreach ($sensorsets as $id => $set) { ?>
 			<li><a href="?sensors=<?= htmlspecialchars($set['ids'])?>"><?=htmlspecialchars($set['description'])?></a></li>
