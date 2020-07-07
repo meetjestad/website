@@ -38,7 +38,13 @@
 	<head>
 		<meta http-equiv="refresh" content="60">
 		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
-
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
+		<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.bundle.min.js" integrity="sha384-1CmrxMRARb6aLqgBO7yyAxTOQE2AKb9GfXnEo760AUcUmFx3ibVJJAzGytlQcNXd" crossorigin="anonymous"></script>
+		<style type="text/css">
+			.gw_location[href=""] {
+				display: none;
+			}
+		</style>
 	</head>
 	<body>
 		<img style="width: 200px; padding: 10px;" src="https://meetjestad.nl/images/5dc94f60a26fc.png" alt="" />
@@ -116,6 +122,50 @@
 	$distances_per_gateway = array();
 	$messagecount = 0;
 
+	function node_button($id) {
+		$id = intval($id);
+		return <<<EOF
+<span class="dropdown">
+  <a class="dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    $id
+  </a>
+
+  <div class="dropdown-menu">
+    <a class="dropdown-item" href="?sensors=$id">Show only messages of node $id</a>
+    <a class="dropdown-item" href="../node/$id">Show information about node $id</a>
+  </div>
+</div>
+EOF;
+	}
+
+	function gateway_button($gw_id, $gw_data = null) {
+		global $gateway_descriptions;
+
+		if (array_key_exists($gw_id, $gateway_descriptions))
+			$gw = $gateway_descriptions[$gw_id];
+		else
+			$gw = $gw_id;
+		$gw_html = htmlspecialchars($gw);
+
+		$filter_url_html = htmlspecialchars('?gateways=' . urlencode($gw_id) . '&show_other_gateways=1');
+		$location_url_html = '';
+		if ($gw_data && array_key_exists('latitude', $gw_data) && $gw_data['latitude'] && array_key_exists('longitude', $gw_data) && $gw_data['longitude']) {
+			$location_url_html = htmlspecialchars('http://www.openstreetmap.org/?mlat=' . rawurlencode($gw_data['latitude']). "&mlon=" . rawurlencode($gw_data['longitude']));
+		}
+		return <<<EOF
+<span class="dropdown">
+  <a class="dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    $gw_html
+  </a>
+
+  <div class="dropdown-menu">
+    <a class="dropdown-item gw_filter" href="$filter_url_html">Show only messages received by $gw_html</a>
+    <a class="dropdown-item gw_location" href="$location_url_html">Show gateway location</a>
+  </div>
+</div>
+EOF;
+	}
+
 	function output_cell($rowspan, $data) {
 		echo("  <td rowspan=\"$rowspan\"> " . $data . "</td>\n");
 	}
@@ -186,7 +236,8 @@
 
 				$url = '?sensors=' . $row["station_id"] . '&amp;limit=50';
 
-				output_cell($rowspan, "<a href=\"" . $url . "\">" . $row["station_id"] . "</a>");
+				//output_cell($rowspan, "<a href=\"" . $url . "\">" . $row["station_id"] . "</a>");
+				output_cell($rowspan, node_button($row["station_id"]));
 
 				$datetime = DateTime::createFromFormat('Y-m-d H:i:s', $row['timestamp'], new DateTimeZone('UTC'));
 				$datetime->setTimeZone(new DateTImeZone('Europe/Amsterdam'));
@@ -237,24 +288,13 @@
 			if (empty($gwdata)) {
 				echo("  <td colspan=\"5\">Not available</a>");
 			} else {
-				$gw_id = $gwdata['gtw_id'];
-
-				if (array_key_exists($gw_id, $gateway_descriptions))
-					$gw = $gateway_descriptions[$gw_id];
-				else
-					$gw = $gw_id;
 				
 				$distance = false;
 				if ($row['latitude'] && array_key_exists('latitude', $gwdata) && $gwdata['latitude']) {
 					$distance = haversineGreatCircleDistance($row['latitude'], $row['longitude'], $gwdata['latitude'], $gwdata['longitude']);
 				}
-
-				if (array_key_exists('latitude', $gwdata) && $gwdata['latitude'] && array_key_exists('longitude', $gwdata) && $gwdata['longitude']) {
-					$url = "http://www.openstreetmap.org/?mlat=" . $gwdata['latitude'] . "&amp;mlon=" . $gwdata['longitude'];
-					echo("  <td><a href=\"" . $url . "\">" . $gw . "</a></td>\n");
-				} else {
-					echo("  <td>" . htmlspecialchars($gw) . "</td>\n");
-				}
+				$gw_id = $gwdata['gtw_id'];
+				echo("  <td>" . gateway_button($gw_id, $gwdata) . "</td>\n");
 				if ($distance)
 					echo("  <td>" . round($distance / 1000, 3) . "km</td>\n");
 				else
@@ -293,8 +333,8 @@
 			}
 			ksort($stations_per_count);
 			foreach($stations_per_count as $count => $stations) {
-				$stationlist = implode(", ", $stations);
-				echo("<tr><td>".htmlspecialchars($count)."</td><td>".htmlspecialchars($stationlist)."</td></tr>\n");
+				$stationlist = implode("", array_map('node_button', $stations));
+				echo("<tr><td>".htmlspecialchars($count)."</td><td>".$stationlist."</td></tr>\n");
 			}
 		?>
 		</table>
@@ -305,26 +345,17 @@
 		<?php
 			arsort($messagecount_per_gateway);
 			foreach($messagecount_per_gateway as $gw_id => $messagecount) {
-				if (array_key_exists($gw_id, $gateway_descriptions))
-					$gw = $gateway_descriptions[$gw_id];
-				else
-					$gw = $gw_id;
-
 				$stations = array_keys($stations_per_gateway[$gw_id]);
 				$stationlist = '';
 				foreach ($stations as $station) {
-					if ($stationlist)
-						$stationlist .= ', ';
-					$url = '?sensors=' . urlencode($station);
-					$stationlist .= "<a href=\"".htmlspecialchars($url)."\">" . htmlspecialchars($station) . "</a>";
+					$stationlist .= node_button($station);
 					if (array_key_exists($station, $distances_per_gateway[$gw_id])) {
 						$distance = $distances_per_gateway[$gw_id][$station];
 						$stationlist .= ' (' . round($distance / 1000, 3) . 'km)';
 					}
 				}
 				$stationcount = count($stations);
-				$url = '?gateways=' . urlencode($gw_id) . '&show_other_gateways=1';
-				echo("<tr><td>".htmlspecialchars($gw)." (<a href=\"".htmlspecialchars($url)."\">filter</a>)</td><td>".htmlspecialchars($messagecount)."</td><td>".htmlspecialchars($stationcount)."</td><td>".$stationlist."</td></tr>\n");
+				echo("<tr><td>".gateway_button($gw_id)."</td><td>".htmlspecialchars($messagecount)."</td><td>".htmlspecialchars($stationcount)."</td><td>".$stationlist."</td></tr>\n");
 			}
 		?>
 		</table>
