@@ -268,6 +268,8 @@ EOF;
 				output_cell($rowspan, $row["extra"]);
 				if ($row['firmware_version'] === null)
 					output_cell($rowspan, '< v1');
+				else if ($row['firmware_version'] !== 255)
+					output_cell($rowspan, '<a href="https://github.com/meetjestad/mjs_firmware/tree/v' . $row['firmware_version'] . '">v' . $row['firmware_version'] . '</a>');
 				else
 					output_cell($rowspan, 'v' . $row['firmware_version']);
 				if ($row['latitude'] == '0.0' && $row['longitude'] == '0.0') {
