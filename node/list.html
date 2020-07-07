@@ -74,7 +74,8 @@
 	</head>
 	<body>
 		<p>
-			Nodes: <select id="setlist" onchange="listnodes(this.value);"><option value="choose" selected="true" disabled="disabled">Choose set</option></select>
+			<label for="setlist">Nodes: </label><select id="setlist" onchange="updatelist();"><option value="" selected="true" disabled="disabled">Choose set</option></select>
+			<input id="onlybad" type="checkbox" onchange="updatelist();"><label for="onlybad">Show only bad nodes</label>
 		</p>
 		<div id="map">
 		</div>
@@ -160,7 +161,7 @@
 					opt.value = json[index].ids;
 					opt.innerHTML = json[index].description;
 					setlist.appendChild(opt);
-					setlist.value='choose';
+					setlist.value='';
 				}
 			});
 
@@ -204,7 +205,11 @@
 				selected = id;
 			}
 
-			function listnodes(ids) {
+			function updatelist() {
+				var ids = document.getElementById('setlist').value;
+				if (!ids)
+					return;
+				var onlybad = document.getElementById('onlybad').checked;
 				selected = '';
 				highlighted = '';
 				var nodelist = document.getElementById('nodelist');
@@ -234,6 +239,8 @@
 							}
 							if (json.id == undefined)
 								return; // Unknown node
+							if (onlybad && json.alivelight != 'red')
+								return;
 
 							row = document.createElement('div');
 							row.setAttribute('id', 'row' + json.id);
