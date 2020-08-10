@@ -224,7 +224,7 @@
 			}
 		</script>
 		
-		<script type="text/javascript" src="http://maplib.khtml.org/khtml.maplib/khtml_all.js"></script>
+		<script type="text/javascript" src="js/khtml_all.js"></script>
 		<script>
 			var lon = undefined;
 			var lat = undefined;
