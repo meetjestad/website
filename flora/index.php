@@ -2,6 +2,7 @@
 	// Ophalen van de flora
 	include ("../connect.php");
 	$database = Connection();
+	$html = '';
 	
 	// verwerk observatie
 	if (isset($_POST['id'])) {
