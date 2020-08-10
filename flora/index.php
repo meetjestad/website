@@ -22,8 +22,8 @@
 		$html.= '<tr><th>Opmerkingen</th><td>'.$_POST['omschrijving'].'</td></tr>'.PHP_EOL;
 		$html.= '</table>'.PHP_EOL;
 		$html.= 'Bedankt voor je observatie!<br/>'.PHP_EOL;
-		$html.= '<input type="button" value="ga naar kaart" onclick="window.location=\'index.php\';" />'.PHP_EOL;
-		$html.= '<input type="button" value="nieuwe observatie" onclick="window.location=\'\';" />'.PHP_EOL;
+		$html.= '<input type="button" value="ga naar kaart" onclick="window.location=\'map.php\';" />'.PHP_EOL;
+		$html.= '<input type="button" value="nieuwe observatie" onclick="window.location=\'index.php\';" />'.PHP_EOL;
 	}
 	
 	// vul observatie in
