@@ -14,7 +14,10 @@
 			$sum_a_sqr += pow($a[$i], 2);
 			$sum_b_sqr += pow($b[$i], 2);
 		}
-		return ($sum_ab/$n - $sum_a/$n * $sum_b/$n) / (sqrt($sum_a_sqr/$n - pow($sum_a/$n, 2)) * sqrt($sum_b_sqr/$n - pow($sum_b/$n, 2)));
+		$div = sqrt($sum_a_sqr/$n - pow($sum_a/$n, 2)) * sqrt($sum_b_sqr/$n - pow($sum_b/$n, 2));
+		if ($div == 0)
+			return 1; // No deviation in one of the variables, not good
+		return ($sum_ab/$n - $sum_a/$n * $sum_b/$n) / $div;
 	}
 
 function health($id, $layout) {
@@ -31,16 +34,27 @@ function health($id, $layout) {
 				echo '<th>'.htmlspecialchars($id).'</th><td colspan="5">no data recorded</td>';
 				break;
 			case 'json':
-				echo false;
+				echo json_encode(array('status' => 'no data recorded'));
 				break;
 		}
-		exit;
+		return;
 	}
 	$latestRow = $latestResult->fetch_array(MYSQLI_ASSOC);
-	$cacheResult = $database->query("SELECT * FROM sensors_health WHERE id = $id");
+	// Only consider cache rows newer than 1 hour, since otherwise the online status might stay GREEN forever
+	$script_modified = filemtime(__FILE__);
+
+	$q = $database->prepare("SELECT * FROM sensors_health WHERE id = ? AND cache_timestamp > FROM_UNIXTIME(?) AND last_seen = ?");
+	$q->bind_param('iis', $id, $script_modified, $latestRow['last_timestamp']);
+	if ($q->execute() === false)
+		die ($database->error);
+	$cacheResult = $q->get_result();
+	if ($cacheResult === false)
+		die ($database->error);
+
 	$cacheRow = $cacheResult->fetch_array(MYSQLI_ASSOC);
 
-	if($cacheResult->num_rows === 0 || $latestRow["last_timestamp"] > $cacheRow["timestamp"]) {
+
+	if($cacheResult->num_rows === 0 || isset($_GET['nocache'])) {
 		// do assessment and write to health cache
 		$result = $database->query("SELECT msr.*, msg.message FROM sensors_measurement AS msr LEFT JOIN sensors_message AS msg ON (msg.id = msr.message_id) WHERE msr.station_id = ".$database->real_escape_string($id)." ORDER BY msr.timestamp DESC LIMIT 100");
 
@@ -50,7 +64,7 @@ function health($id, $layout) {
 		$fcnt2 = 0;
 		while($row = $result->fetch_array(MYSQLI_ASSOC)) {
 			if ($rows==0) { // most recent message
-				$timestamp = $row["timestamp"];
+				$last_seen = $row["timestamp"];
 				$latitude = $row["latitude"];
 				$longitude = $row["longitude"];
 				$supply = $row["supply"];
@@ -71,19 +85,26 @@ function health($id, $layout) {
 		}
 		else $radiosuccess = '';
 
-		// Assess humidity sensor health
-		$countinvalidhum = 0;
-		$countinvaliddhum = 0;
-		for($i=0; $i<count($hum); $i++) {
-			if ($hum[$i]<10.0 || $hum[$i]>100.0) $countinvalidhum++;
-			if ($i>0) if (abs($hum[$i]-$hum[$i-1])==0 || abs($hum[$i]-$hum[$i-1])>50.0) $countinvaliddhum++;
+		if (count($tmp) > 1 && count($hum) > 1) {
+			// Assess humidity sensor health
+			$countinvalidhum = 0;
+			$countinvaliddhum = 0;
+			for($i=0; $i<count($hum); $i++) {
+				if ($hum[$i]<10.0 || $hum[$i]>100.0) $countinvalidhum++;
+				if ($i>0) if (abs($hum[$i]-$hum[$i-1])==0 || abs($hum[$i]-$hum[$i-1])>50.0) $countinvaliddhum++;
+			}
+			$percinvalidhum = $countinvalidhum/count($hum);
+			$percinvaliddhum = $countinvaliddhum/(count($hum)-1);
+
+			$Rtmphum = round(corr($tmp, $hum), 2);
+
+			$humhealth = ((1.0 - $percinvalidhum) + (1.0 - $percinvaliddhum) + 0.5*(1.0-$Rtmphum))/3.0;
+		} else {
+			$Rtmphum = 0;
+			$humhealth = 0;
+			$percinvalidhum = 0;
+			$percinvaliddhum = 0;
 		}
-		$percinvalidhum = $countinvalidhum/count($hum);
-		$percinvaliddhum = $countinvaliddhum/(count($hum)-1);
-
-		$Rtmphum = round(corr($tmp, $hum), 2);
-
-		$humhealth = ((1.0 - $percinvalidhum) + (1.0 - $percinvaliddhum) + 0.5*(1.0-$Rtmphum))/3.0;
 
 		$result = $database->query("SELECT * FROM sensors_measurement WHERE station_id = ".$database->real_escape_string($id)." ORDER BY timestamp DESC LIMIT 1000");
 		$rows = 0;
@@ -94,44 +115,38 @@ function health($id, $layout) {
 		}
 		$perchasgps = $counthasgps/$rows;
 		$gpscount = $rows;
+		$radiocount = $fcnt1 - $fcnt2 + 1;
 
-		if ($cacheResult->num_rows === 0) {
-			$q = $database->prepare("INSERT INTO sensors_health SET id = ?, timestamp = ?, humhealth = ?, perchasgps = ?, radiosuccess = ?, supply = ?, longitude = ?, latitude = ?");
-			$q->bind_param('isdddddd', $id, $timestamp, $humhealth, $perchasgps, $radiosuccess, $supply, $longitude, $latitude);
-			$q->execute();
-		}
-		else {
-			$q = $database->prepare("UPDATE sensors_health SET timestamp = ?, humhealth = ?, perchasgps = ?, radiosuccess = ?, supply = ?, longitude = ?, latitude = ?");
-			$q->bind_param('sdddddd', $timestamp, $humhealth, $perchasgps, $radiosuccess, $supply, $longitude, $latitude);
-			$q->execute();
-		}
+		$q = $database->prepare("REPLACE INTO sensors_health SET id = ?, last_seen = ?, humhealth = ?, perchasgps = ?, radiosuccess = ?, supply = ?, longitude = ?, latitude = ?, radiocount = ?, gpscount = ?, percinvalidhum = ?, percinvaliddhum = ?, Rtmphum = ?");
+		$q->bind_param('isddddddiiddd', $id, $last_seen, $humhealth, $perchasgps, $radiosuccess, $supply, $longitude, $latitude, $radiocount, $gpscount, $percinvalidhum, $percinvaliddhum, $Rtmphum);
+		$q->execute();
+		$fromcache = false;
 	}
 	else {
 		// use data from health cache
-		$timestamp = $cacheRow["timestamp"];
+		$last_seen = $cacheRow["last_seen"];
 		$humhealth = $cacheRow["humhealth"];
 		$perchasgps = $cacheRow["perchasgps"];
 		$radiosuccess = $cacheRow["radiosuccess"];
 		$supply = $cacheRow["supply"];
 		$longitude = $cacheRow["longitude"];
 		$latitude = $cacheRow["latitude"];
-		// TODO: Put this value in the cache
-		$fcnt1 = 0;
-		$fcnt2 = 0;
-		$gpscount = 0;
-		$percinvalidhum = 0;
-		$percinvaliddhum = 0;
-		$Rtmphum = 0;
+		$radiocount = $cacheRow["radiocount"];;
+		$gpscount = $cacheRow["gpscount"];;
+		$percinvalidhum = $cacheRow["percinvalidhum"];;
+		$percinvaliddhum = $cacheRow["percinvaliddhum"];;
+		$Rtmphum = $cacheRow["Rtmphum"];;
+		$fromcache = true;
 	}
 
-	$lastseen = DateTime::createFromFormat('Y-m-d H:i:s', $timestamp, new DateTimeZone('UTC'));
-	$lastseen->setTimeZone(new DateTImeZone('Europe/Amsterdam'));
-	$lastseen = $lastseen->format('Y-m-d H:i:s');
+
 	if ($latitude == '0.0' && $longitude == '0.0') $position = 'No position';
 	else $position = '<a href="http://www.openstreetmap.org/?mlat='.$latitude.'&amp;mlon='.$longitude.'" target="_blank">'.$latitude.' / '.$longitude.'</a>';
 
 	// Assess up/downtime
-	$idletime = (time() - strtotime($lastseen))/60/60;
+	$last_seen_dt = DateTime::createFromFormat('Y-m-d H:i:s', $last_seen, new DateTimeZone('UTC'));
+	$last_seen_ts = $last_seen_dt->getTimestamp();
+	$idletime = (time() - $last_seen_ts)/60/60;
 
 	if ($idletime > 24) {
 		$idletime = round($idletime/24).' day'.($idletime > 24 ? 's' : '');
@@ -172,7 +187,7 @@ function health($id, $layout) {
 			echo '<tr><th colspan="3">Battery</th></tr>';
 			echo '<tr><td style="color:'.htmlspecialchars($supplylight).';">●</td><td>Voltage</td><td>'.htmlspecialchars($supply).'V</td></tr>';
 			echo '<tr><th colspan="3">Radio</th></tr>';
-			if ($radiosuccess) echo '<tr><td style="color:'.htmlspecialchars($radiolight).';">●</td><td>Delivery</td><td>'.htmlspecialchars(round(100.0*$radiosuccess)).' % of last '.htmlspecialchars($fcnt1 - $fcnt2 + 1).' packets</td></tr>';
+			if ($radiosuccess) echo '<tr><td style="color:'.htmlspecialchars($radiolight).';">●</td><td>Delivery</td><td>'.htmlspecialchars(round(100.0*$radiosuccess)).' % of last '.htmlspecialchars($radiocount).' packets</td></tr>';
 			echo '<tr><th colspan="3">Sensors</th></tr>';
 			echo '<tr><td style="color:'.htmlspecialchars($gpslight).';">●</td><td>GPS</td><td>'.htmlspecialchars(round(100.0*$perchasgps)).' % present in last '.htmlspecialchars($gpscount).' packets</td></tr>';
 			echo '<tr><td style="color:'.htmlspecialchars($humiditylight).';">●</td><td>Humidity</td><td>'.htmlspecialchars(round(100.0*$percinvalidhum)).' % invalid Φ (&lt;10% or &gt;100%)</td></tr>';
@@ -199,9 +214,24 @@ function health($id, $layout) {
 				"gpslight"=>$gpslight,
 				"humhealth"=>$humhealth,
 				"humiditylight"=>$humiditylight,
-				"position"=>array("lon"=>$longitude, "lat"=>$latitude)
+				"position"=>array("lon"=>$longitude, "lat"=>$latitude),
+				"fromcache"=>$fromcache,
 			);
 			echo json_encode($node);
 		break;
+		case'array':
+			return array(
+				"id"=>$id,
+				"idletime"=>$idletime,
+				"alivelight"=>$alivelight,
+				"supply"=>$supply,
+				"supplylight"=>$supplylight,
+				"perchasgps"=>$perchasgps,
+				"gpslight"=>$gpslight,
+				"humhealth"=>$humhealth,
+				"humiditylight"=>$humiditylight,
+				"position"=>array("lon"=>$longitude, "lat"=>$latitude),
+				"fromcache"=>$fromcache,
+			);
 	}
 }
