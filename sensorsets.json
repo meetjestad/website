@@ -12,7 +12,7 @@
 		"ids": "11,14,19,26,31,37,41,47"
 	},
 	"schothorst": {
-		"description": "Amersfoort - schothorst",
+		"description": "Amersfoort - Schothorst",
 		"ids": "13,18,25,33,43,49,59,63,71,76,88,109,110,122,127,139,145,148,173,174,177,182,205,250,269,270,272-274,276,279,284,288-290,300"
 	},
 	"apeldoorn": {
@@ -23,17 +23,21 @@
 		"description": "Bergen",
 		"ids": "210-217,219-220,222-249,350,351,352,353,354,355,356,357,358,359,360,362,363,364,365,366,367,372,374,375,376,377,381,382,383,384,385,386,389,390,391,392,393,394,395,396,397,398,399,520-549,551-559"
 	},
+	"bodemvocht": {
+		"description": "bodemvocht - soil moisture",
+		"ids": ",417,517,519,661,749,751,752,753,754,755,756,757,758,759,761,"
+	},
 	"enschede": {
 		"description": "Enschede",
 		"ids": "114,129,136,146,176"
 	},
+	"fijnstof": {
+		"description": "fijnstof - particle matter",
+		"ids": ",68,487,567,2000,2001,2002,2003,2004,2005,2006,2007,"
+	},
 	"grubbenvorst": {
 		"description": "Grubbenvorst",
 		"ids": "253"
-	},
-	"others": {
-		"description": "others",
-		"ids": "415,503,586,590,606"
 	},
 	"tilburg": {
 		"description": "Tilburg",
@@ -42,5 +46,9 @@
 	"utrecht": {
 		"description": "Utrecht",
 		"ids": "28,108,149,161,172,175,184,196,208,296"
+	},
+	"others": {
+		"description": "others",
+		"ids": "415,503,586,590,606"
 	}
 }
