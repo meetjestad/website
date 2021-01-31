@@ -358,6 +358,11 @@ Download a two day time series for a single node as a csv table<br/>
 Download a data to create a heat map for a certain set of sensors<br/>
 <div class="code">https://meetjestad.net/data/?type=sensors&amp;ids=11,14,19,26,31,37,41,47&amp;begin=2017-11-16,12:00&amp;end=2017-11-16,12:15&amp;format=json&amp;limit=100</div>
 		</div>
+<br/>
+<br/>
+<b>Source code</b><br/>
+The source code for this page can be found on <a href="https://github.com/meetjestad/website/">Github</a>.
+
 		<script>
 		var startDate,
 			endDate,
