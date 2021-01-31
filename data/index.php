@@ -124,7 +124,7 @@
 				$ids_int_array = array_map('intval', explode(',', $ids));
 				if ($ids) $WHERE.= ($WHERE?" AND ":" WHERE ")."station_id IN (" . implode(',', $ids_int_array) . ")";
 				$SORT = " ORDER BY timestamp ".($limit ? "DESC" : "ASC");
-				$LIMIT = $limit ? " LIMIT ".$limit : "";
+				$LIMIT = $limit ? " LIMIT ".intval($limit) : "";
 				$query = "SELECT * FROM sensors_measurement".$WHERE.$SORT.$LIMIT;
 				$results = $database->query($query, MYSQLI_USE_RESULT) or die(mysqli_error($database)); ;
 
