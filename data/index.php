@@ -69,7 +69,7 @@
 					// a bunch of extra labels rather than just one. This is a bit of a hack, but
 					// especially on big exports it would take a lot of extra time to figure out the
 					// actual number of extra fields used...
-					if ($rows == 0 && $data[$i] == 'extra') $output .= "extra1\textra2\textra3\textra4\textra5\textra6\textra7\textra8\textra9";
+					if ($rows == 0 && $data[$i] == 'extra') $output .= "extra1\textra2\textra3\textra4\textra5\textra6\textra7\textra8\textra9\textra10\textra11\textra12\textra13\textra14";
 					else if ($fieldNames[$i]=='extra') $output.= str_replace(',', "\t", $data[$i]);
 					else $output.= $data[$i];
 				}
