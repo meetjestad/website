@@ -49,6 +49,7 @@
 				if ($rows>0) {
 					if ($rows>1) $output.= ",\n";
 					$output.= '{';
+					$output.= '"row": ' . ($rows - 1) . ',';
 //					for($i=0;$i<$cols;$i++) $output.= ($i?",":"").'"'.$fieldNames[$i].'":"'.$data[$i].'"';
 					for($i=0;$i<$cols;$i++) {
 						if ($data[$i]) {
