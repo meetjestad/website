@@ -251,7 +251,7 @@
 		<script>
 			function selectSet(id) {
 				switch(id) {
-<?
+<?php
 	foreach($sensorsets as $id => $set) echo 'case '.json_encode($id).': document.getElementById(\'idlist\').value = '.json_encode($set['ids']).'; break;'."\r\n";
 ?>
 				}
@@ -299,7 +299,7 @@
 					enter one or more ids...
 					<select onchange="selectSet(this.value);">
 						<option selected="selected" disabled="disabled">...or choose a dataset</option>
-<?
+<?php
 	foreach($sensorsets as $id => $set) echo '<option value="'.htmlspecialchars($id).'">'.htmlspecialchars($set['description']).'</option>';
 ?>
 					</select><br/>
