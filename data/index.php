@@ -52,7 +52,7 @@
 					$output.= '"row": ' . ($rows - 1) . ',';
 //					for($i=0;$i<$cols;$i++) $output.= ($i?",":"").'"'.$fieldNames[$i].'":"'.$data[$i].'"';
 					for($i=0;$i<$cols;$i++) {
-						if ($data[$i]) {
+						if (!is_null($data[$i])) {
 							if ($i) $output.= ",";
 							$output.= '"'.$fieldNames[$i].'":';
 							if ($fieldNames[$i]=='timestamp') $output.= '"'.$data[$i].'"';
