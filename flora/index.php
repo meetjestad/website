@@ -6,10 +6,10 @@
 	
 	// verwerk observatie
 	if (isset($_POST['id'])) {
-		$result = $database->query("INSERT INTO `flora_observaties` (`soort_id`,`waarneming_id`,`datum`,`locatie`,`omschrijving`) VALUES ('".$_POST['id']."','".$_POST['waarneming']."','".date("Y-m-d",strtotime($_POST['datum']))."','".$_POST['lon'].",".$_POST['lat']."','".$_POST['omschrijving']."')");
+		$result = $database->query("INSERT INTO `flora_observaties` (`soort_id`,`waarneming_id`,`datum`,`locatie`,`omschrijving`) VALUES ('".$database->real_escape_string($_POST['id'])."','".$database->real_escape_string($_POST['waarneming'])."','".$database->real_escape_string(date("Y-m-d",strtotime($_POST['datum'])))."','".$database->real_escape_string($_POST['lon']).",".$database->real_escape_string($_POST['lat'])."','".$database->real_escape_string($_POST['omschrijving'])."')");
 		if (!$result) $html.= $database->error.PHP_EOL;
 		
-		$result = $database->query("SELECT naam_nl,naam_la,afbeelding,omschrijving,waarnemingen FROM flora WHERE id=".$_POST['id']);
+		$result = $database->query("SELECT naam_nl,naam_la,afbeelding,omschrijving,waarnemingen FROM flora WHERE id=".$database->real_escape_string($_POST['id']));
 		$table = $result->fetch_array(MYSQLI_ASSOC);
 		$waarnemingen = json_decode($table["waarnemingen"]);
 		$html.= 'De volgende observatie is toegevoegd aan Meet je stad:<br/>'.PHP_EOL;
@@ -28,7 +28,7 @@
 	
 	// vul observatie in
 	else if (isset($_GET['id'])) {
-		$result = $database->query("SELECT naam_nl,naam_la,afbeelding,omschrijving,waarnemingen FROM flora WHERE id=".$_GET['id']);
+		$result = $database->query("SELECT naam_nl,naam_la,afbeelding,omschrijving,waarnemingen FROM flora WHERE id=".$database->real_escape_string($_GET['id']));
 		$table = $result->fetch_array(MYSQLI_ASSOC);
 		$waarnemingen = json_decode($table["waarnemingen"]);
 		$html.= '<form name="floraObservationForm" method="POST" action="">'.PHP_EOL;
