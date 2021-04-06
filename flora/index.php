@@ -14,12 +14,12 @@
 		$waarnemingen = json_decode($table["waarnemingen"]);
 		$html.= 'De volgende observatie is toegevoegd aan Meet je stad:<br/>'.PHP_EOL;
 		$html.= '<table>'.PHP_EOL;
-		$html.= '<tr><th>Datum</th><td>'.date("Y-m-d",strtotime($_POST['datum'])).'</td></tr>'.PHP_EOL;
-		$html.= '<tr><th>Latitude</th><td>'.$_POST['lat'].'</td></tr>'.PHP_EOL;
-		$html.= '<tr><th>Longitude</th><td>'.$_POST['lon'].'</td></tr>'.PHP_EOL;
-		$html.= '<tr><th>Soort</th><td><b>'.$table['naam_nl'].'</b> <i>'.$table['naam_la'].'</i></td></tr>'.PHP_EOL;
-		$html.= '<tr><th>Waarneming</th><td>'.$waarnemingen[$_POST['waarneming']].'</td></tr>'.PHP_EOL;
-		$html.= '<tr><th>Opmerkingen</th><td>'.$_POST['omschrijving'].'</td></tr>'.PHP_EOL;
+		$html.= '<tr><th>Datum</th><td>'.htmlspecialchars(date("Y-m-d",strtotime($_POST['datum']))).'</td></tr>'.PHP_EOL;
+		$html.= '<tr><th>Latitude</th><td>'.htmlspecialchars($_POST['lat']).'</td></tr>'.PHP_EOL;
+		$html.= '<tr><th>Longitude</th><td>'.htmlspecialchars($_POST['lon']).'</td></tr>'.PHP_EOL;
+		$html.= '<tr><th>Soort</th><td><b>'.htmlspecialchars($table['naam_nl']).'</b> <i>'.htmlspecialchars($table['naam_la']).'</i></td></tr>'.PHP_EOL;
+		$html.= '<tr><th>Waarneming</th><td>'.htmlspecialchars($waarnemingen[$_POST['waarneming']]).'</td></tr>'.PHP_EOL;
+		$html.= '<tr><th>Opmerkingen</th><td>'.htmlspecialchars($_POST['omschrijving']).'</td></tr>'.PHP_EOL;
 		$html.= '</table>'.PHP_EOL;
 		$html.= 'Bedankt voor je observatie!<br/>'.PHP_EOL;
 		$html.= '<input type="button" value="ga naar kaart" onclick="window.location=\'map.php\';" />'.PHP_EOL;
@@ -32,11 +32,12 @@
 		$table = $result->fetch_array(MYSQLI_ASSOC);
 		$waarnemingen = json_decode($table["waarnemingen"]);
 		$html.= '<form name="floraObservationForm" method="POST" action="">'.PHP_EOL;
-		$html.= '<input type="hidden" name="id" value="'.$_GET['id'].'"/>'.PHP_EOL;
+		$html.= '<input type="hidden" name="id" value="'.htmlspecialchars($_GET['id']).'"/>'.PHP_EOL;
 		
 		$html.= '<div class="observatie">'.PHP_EOL;
-		$html.= '<b>'.$table["naam_nl"].'</b> <i>'.$table["naam_la"].'</i><br/>'.PHP_EOL;
-		$html.= '<img class="afbeelding" src="images/'.$table["afbeelding"].'" /><br/>'.PHP_EOL;
+		$html.= '<b>'.htmlspecialchars($table["naam_nl"]).'</b> <i>'.htmlspecialchars($table["naam_la"]).'</i><br/>'.PHP_EOL;
+		$html.= '<img class="afbeelding" src="images/'.htmlspecialchars($table["afbeelding"]).'" /><br/>'.PHP_EOL;
+		// Note: No html escaping, can contain HTML
 		$html.= $table["omschrijving"].PHP_EOL;
 		$html.= '</div>'.PHP_EOL;
 		
@@ -45,7 +46,7 @@
 		
 		$html.= '<b>soort waarneming</b> <select name="waarneming">'.PHP_EOL;
 		$html.= '<option selected="true" disabled="disabled">kies een waarneming...</option>'.PHP_EOL;
-		foreach($waarnemingen as $id => $waarneming) $html.= '<option value="'.$id.'">'.$waarneming.'</option>'.PHP_EOL;
+		foreach($waarnemingen as $id => $waarneming) $html.= '<option value="'.htmlspecialchars($id).'">'.htmlspecialchars($waarneming).'</option>'.PHP_EOL;
 		$html.= '</select><br/>'.PHP_EOL;
 		$html.= '<b>datum waarneming</b> <input type="date" id="datum" name="datum" size="20" placeholder="DD/MM/JJJJ" class="form-control" /><br/>'.PHP_EOL;
 		$html.= '<b>locatie waarneming</b> (sleep de punaise naar de juiste plek)<br/><div id="map"> </div>'.PHP_EOL;
@@ -78,10 +79,10 @@
 		
 		while($table = $result->fetch_array(MYSQLI_ASSOC)) {
 			$html.= '<div class="soort">'.PHP_EOL;
-			$html.= '<a href="?id='.$table["id"].'">'.PHP_EOL;
-			if ($table["afbeelding"]) $html.= '<img class="listimage" src="images/'.$table["afbeelding"].'" /><br/>'.PHP_EOL;
-			$html.= '<b>'.$table["naam_nl"].'</b><br/>'.PHP_EOL;
-			$html.= '<i>'.$table["naam_la"].'</i>'.PHP_EOL;
+			$html.= '<a href="?id='.htmlspecialchars($table["id"]).'">'.PHP_EOL;
+			if ($table["afbeelding"]) $html.= '<img class="listimage" src="images/'.htmlspecialchars($table["afbeelding"]).'" /><br/>'.PHP_EOL;
+			$html.= '<b>'.htmlspecialchars($table["naam_nl"]).'</b><br/>'.PHP_EOL;
+			$html.= '<i>'.htmlspecialchars($table["naam_la"]).'</i>'.PHP_EOL;
 			$html.= '</a>'.PHP_EOL;
 			$html.= '</div>'.PHP_EOL;
 		}
