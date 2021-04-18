@@ -76,6 +76,7 @@ CREATE TABLE `sensors_measurement` (
 CREATE TABLE `sensors_message` (
   `id` int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
   `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `source` varchar(16) NOT NULL,
   `message` text NOT NULL
 ) DEFAULT CHARSET=latin1;
 
