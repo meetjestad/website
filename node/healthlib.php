@@ -56,7 +56,7 @@ function health($id, $layout) {
 
 	if($cacheResult->num_rows === 0 || isset($_GET['nocache'])) {
 		// do assessment and write to health cache
-		$result = $database->query("SELECT msr.*, msg.message FROM sensors_measurement AS msr LEFT JOIN sensors_message AS msg ON (msg.id = msr.message_id) WHERE msr.station_id = ".$database->real_escape_string($id)." ORDER BY msr.timestamp DESC LIMIT 100");
+		$result = $database->query("SELECT msr.*, msg.message, msg.source FROM sensors_measurement AS msr LEFT JOIN sensors_message AS msg ON (msg.id = msr.message_id) WHERE msr.station_id = ".$database->real_escape_string($id)." ORDER BY msr.timestamp DESC LIMIT 100");
 
 		$rows = 0;
 		$lastfcnt = 0;
@@ -70,7 +70,9 @@ function health($id, $layout) {
 				$supply = $row["supply"];
 			}
 			$message = json_decode($row['message'], true);
-			$fcnt = $message['counter'];
+			$src = $row['source'];
+			if ($src == 'ttn.v1' || $src == 'ttn.v2') $fcnt = $message['counter'];
+			if ($src == 'ttn.v3') $fcnt = $message['uplink_message']['f_cnt'];
 			if ($rows==0) $fcnt1 = $fcnt;
 			elseif ($fcnt==0 || $fcnt > $lastfcnt) break;
 			$rows++;
