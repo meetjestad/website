@@ -85,6 +85,52 @@ var sensorSuburbDataLayer = new ol.layer.Vector({
 	}
 });
 
+
+// get sensor data for Bodemvocht (soil moisture)
+var sensorBodemStyleCache = {};
+var sensorBodemDataLayer = new ol.layer.Vector({
+	visible: false,
+	title: 'soil moisture sensors',
+	source: new ol.source.Cluster({
+		distance: 40,
+		source: new ol.source.Vector({
+			url: 'https://meetjestad.net/data/sensorsBodem_json.php',
+			defaultProjection: 'EPSG:4326',
+			projection: 'EPSG:28992',
+			format: new ol.format.GeoJSON()
+		})
+	}),
+	style: function(feature, resolution) {
+		var size = feature.get('features').length;
+		var style = sensorBodemStyleCache[size];
+		if (!style) {
+			var label = '';
+			if (size>1) label = size.toString();
+			style = [new ol.style.Style({
+				image: new ol.style.Icon(({
+					scale: 0.5 + Math.log(size)/10,
+					anchor: [0, 1.0],
+					anchorXUnits: 'fraction',
+					anchorYUnits: 'fraction',
+					opacity: 0.75,
+					src: 'images/sensor.png'
+				})),
+				text: new ol.style.Text({
+					text: label,
+					offsetX: 8,
+					offsetY: -8,
+					fill: new ol.style.Fill({
+						color: '#000'
+					})
+				})
+			})];
+			sensorBodemStyleCache[size] = style;
+		}
+		return style;
+	}
+});
+
+
 // get all sensor data
 var sensorAllStyleCache = {};
 var sensorAllDataLayer = new ol.layer.Vector({
