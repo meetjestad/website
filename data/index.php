@@ -397,7 +397,7 @@ The source code for this page can be found on <a href="https://github.com/meetje
 					return dateFns.parse(dateString);
 				},
 				minDate: new Date(2015, 1, 1),
-				maxDate: new Date(2020, 12, 31),
+				maxDate: new Date(2099, 12, 31),
 				onSelect: function() {
 					startDate = this.getDate();
 					updateStartDate();
