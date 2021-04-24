@@ -136,9 +136,9 @@
 					// data (such as QGIS) take these as
 					// literal coordinates.
 					if ($result['latitude'] == 0)
-						$result['latitude'] = '';
+						$result['latitude'] = null;
 					if ($result['longitude'] == 0)
-						$result['longitude'] = '';
+						$result['longitude'] = null;
 					echoTableRow(array($result["station_id"], $result["timestamp"], $result["firmware_version"], $result["longitude"], $result["latitude"], $result["temperature"], $result["humidity"], $result["lux"], $result["supply"], $result["battery"], $result["pm2_5"], $result["pm10"], $result["firmware_version"], $result["extra"]));
 					ob_flush();
 					flush();
