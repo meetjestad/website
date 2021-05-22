@@ -32,6 +32,9 @@
 
 	if (file_exists('../sensorsets.json')) $sensorsets = json_decode(file_get_contents('../sensorsets.json'), true);
 	else $sensorsets = array();
+
+	if (file_exists('../ttn_gw_data.json')) $ttn_gw_data = json_decode(file_get_contents('../ttn_gw_data.json'), true);
+	else $ttn_gw_data = array();
 ?>
 <!DOCTYPE html>
 <html class="no-js">
@@ -103,17 +106,6 @@
 	if (isset($_GET['show_other_gateways']))
 		$show_other_gateways = (bool)$_GET['show_other_gateways'];
 
-	$gateway_descriptions = [
-		"eui-1dee0b64b020eec4" => "Meetjestad #1 (De WAR)",
-		"mjs-gateway-1" => "Meetjestad #1 (De WAR)",
-		"mjs-gateway-3" => "Meetjestad #3 (Berghotel)",
-		"mjs-gateway-6" => "Meetjestad #6 (La Balise)",
-		"eui-1dee1cc11cba7539" => "Meetjestad #4 (De Koperhorst)",
-		"mjs-gateway-4" => "Meetjestad #4 (De Koperhorst)",
-		"eui-0000024b080e020a" => "(NH Hotel Amersfoort)",
-		"eui-0000024b080602ed" => "(De Bilt)",
-		"eui-000078a504f5b057" => "(De Bilt)",
-	];
 
 	$result = $database->query("SELECT msr.*, msg.message, msg.source FROM sensors_measurement AS msr LEFT JOIN sensors_message AS msg ON (msg.id = msr.message_id) $WHERE ORDER BY msr.timestamp DESC LIMIT $limit");
 
@@ -143,9 +135,8 @@ EOF;
 
 		if ($gw_id == 'unknown')
 			return '<i>unknown</i>';
-
-		if (array_key_exists($gw_id, $gateway_descriptions))
-			$gw = $gateway_descriptions[$gw_id];
+		if (isset($gw_data['alias']))
+			$gw = $gw_data['alias'];
 		else
 			$gw = $gw_id;
 		$gw_html = htmlspecialchars($gw);
@@ -268,6 +259,33 @@ EOF;
 			$gateways = [[]];
 			$rowspan = 1;
 		}
+
+		// enhance gwdata with alias and geo
+		foreach ($gateways as &$gwdata) {
+			$gtw_id = $gwdata['gtw_id'];
+			if ($gwdata['gtw_id'] != 'unknown') {
+				// add alias
+				if (isset($ttn_gw_data[$gtw_id]['alias']))
+					$gwdata['alias'] = $ttn_gw_data[$gtw_id]['alias'];
+				// add geo if missing
+				if (!isset($gwdata['longitude']) || !isset($gwdata['latitude'])) {
+					if (isset($ttn_gw_data[$gtw_id]['latitude']))
+						$gwdata['latitude'] = $ttn_gw_data[$gtw_id]['latitude'];
+					if (isset($ttn_gw_data[$gtw_id]['longitude']))
+						$gwdata['longitude'] = $ttn_gw_data[$gtw_id]['longitude'];
+					if (isset($ttn_gw_data[$gtw_id]['altitude']))
+						$gwdata['altitude'] = $ttn_gw_data[$gtw_id]['altitude'];
+				}
+			}
+			if (!isset($gwdata['latitude']))
+				$gwdata['latitude'] = 0;
+			if (!isset($gwdata['longitude']))
+				$gwdata['longitude'] = 0;
+			if (!isset($gwdata['altitude']))
+				$gwdata['altitude'] = 0;
+
+		}
+		unset($gwdata);
 
 		$messagecount++;
 
