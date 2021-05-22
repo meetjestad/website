@@ -242,7 +242,7 @@ EOF;
 				output_cell($rowspan, node_button($row["station_id"]));
 
 				$datetime = DateTime::createFromFormat('Y-m-d H:i:s', $row['timestamp'], new DateTimeZone('UTC'));
-				$datetime->setTimeZone(new DateTImeZone('Europe/Amsterdam'));
+				$datetime->setTimeZone(new DateTimeZone('Europe/Amsterdam'));
 				output_cell($rowspan, $datetime->format('Y-m-d H:i:s'));
 				output_cell($rowspan, $row["temperature"] . "°C");
 				output_cell($rowspan, $row["humidity"] . "%");
