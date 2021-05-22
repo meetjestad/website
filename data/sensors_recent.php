@@ -265,24 +265,24 @@ EOF;
 				} else {
 					output_cell($rowspan, '-');
 				}
+
 				output_cell($rowspan, $row["extra"]);
+
 				if ($row['firmware_version'] === null)
 					output_cell($rowspan, '< v1');
 				else if ($row['firmware_version'] !== '255')
 					output_cell($rowspan, '<a href="https://github.com/meetjestad/mjs_firmware/tree/v' . $row['firmware_version'] . '">v' . $row['firmware_version'] . '</a>');
 				else
 					output_cell($rowspan, 'v' . $row['firmware_version']);
+
 				if ($row['latitude'] == '0.0' && $row['longitude'] == '0.0') {
 					output_cell($rowspan, 'No position');
 				} else {
 					$url = "http://www.openstreetmap.org/?mlat=" . $row['latitude'] . "&amp;mlon=" . $row['longitude'];
 					output_cell($rowspan, "<a href=\"" . $url . "\">" . $row["latitude"] . " / " . $row["longitude"] . "</a>");
 				}
-				if (array_key_exists('counter', $message)) {
-					output_cell($rowspan, $message['counter']);
-				} else {
-					output_cell($rowspan, '-');
-				}
+
+				output_cell($rowspan, $metadata['counter']);
 			} else {
 				//echo("  <td colspan=\"6\"></td>");
 			}
