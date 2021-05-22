@@ -115,7 +115,8 @@
 		"eui-000078a504f5b057" => "(De Bilt)",
 	];
 
-	$result = $database->query("SELECT msr.*, msg.message FROM sensors_measurement AS msr LEFT JOIN sensors_message AS msg ON (msg.id = msr.message_id) $WHERE ORDER BY msr.timestamp DESC LIMIT $limit");
+	$result = $database->query("SELECT msr.*, msg.message, msg.source FROM sensors_measurement AS msr LEFT JOIN sensors_message AS msg ON (msg.id = msr.message_id) $WHERE ORDER BY msr.timestamp DESC LIMIT $limit");
+
 	$count_per_station = array();
 	$stations_per_gateway = array();
 	$messagecount_per_gateway = array();
@@ -139,7 +140,9 @@ EOF;
 	}
 
 	function gateway_button($gw_id, $gw_data = null) {
-		global $gateway_descriptions;
+
+		if ($gw_id == 'unknown')
+			return '<i>unknown</i>';
 
 		if (array_key_exists($gw_id, $gateway_descriptions))
 			$gw = $gateway_descriptions[$gw_id];
@@ -175,12 +178,11 @@ EOF;
 	while($row = $result->fetch_array(MYSQLI_ASSOC)) {
 		if ($row['message']) {
 			$message = json_decode($row['message'], true);
-			$metadata = $message['metadata'];
 
-			if (!array_key_exists('gateways', $metadata)) {
+			if ($row['source'] == 'ttn.v1') {
 				$gateways = [];
 
-				// Convert TTN staging to production format
+				// Convert TTN v1=staging to v2=production format
 				foreach ($metadata as $meta) {
 					$meta['gtw_id'] = 'eui-' . strtolower($meta['gateway_eui']);
 					$meta['snr'] = $meta['lsnr'];
@@ -188,13 +190,56 @@ EOF;
 				}
 
 				$metadata = [
-					'gateways' => $gateways,
-					'frequency' => $metadata[0]['frequency'],
-					'data_rate' => $metadata[0]['datarate'],
-					'coding_rate' => $metadata[0]['codingrate'],
+					'gateways'    => $message['metadata']['gateways'],
+					'frequency'   => $message['metadata']['frequency'],
+					'data_rate'   => $message['metadata']['datarate'],
+					'coding_rate' => $message['metadata']['codingrate'],
+					'counter'     => $message['counter'],
+				];
+
+			} else if ($row['source'] == 'ttn.v2') {
+				$metadata = [
+					'gateways'    => $message['metadata']['gateways'],
+					'frequency'   => $message['metadata']['frequency'],
+					'data_rate'   => $message['metadata']['data_rate'],
+					'coding_rate' => $message['metadata']['coding_rate'],
+					'counter'     => $message['counter'],
+				];
+
+			} else if ($row['source'] == 'ttn.v3') {
+
+				// Convert TTN v3 to v2 format
+
+				// Retrieve gateway details
+				$gateways = [];
+				foreach ($message['uplink_message']['rx_metadata'] as $meta) {
+					$meta['gtw_id'] = $meta['gateway_ids']['gateway_id'];
+					$meta['gtw_eui'] = "";
+					if (isset($meta['gateway_ids']['eui']))
+						$meta['gtw_eui'] = $meta['gateway_ids']['eui'];
+					// Gateways bridge from ttnv2 do not include their id, see:
+					// https://github.com/packetbroker/api/issues/23#issuecomment-852021215
+					if ($meta['gtw_id'] == 'packetbroker')
+						$meta['gtw_id'] = 'unknown';
+					// Default values (zeroes) are omitted: https://github.com/TheThingsNetwork/lorawan-stack/issues/3874
+					if (!isset($meta['snr']))
+						$meta['snr'] = 0;
+
+					$gateways[] = $meta;
+				}
+
+				$spreading_factor = $message['uplink_message']['settings']['data_rate']['lora']['spreading_factor'];
+				$bandwidth =        $message['uplink_message']['settings']['data_rate']['lora']['bandwidth'] / 1000;
+				$data_rate = sprintf("SF%sBW%s", $spreading_factor, $bandwidth);
+				$metadata = [
+					'gateways'    => $gateways,
+					'frequency'   => $message['uplink_message']['settings']['frequency'] / 1000000.,
+					'coding_rate' => $message['uplink_message']['settings']['coding_rate'],
+					'data_rate'   => $data_rate,
+					// Default values (zeroes) are omitted: https://github.com/TheThingsNetwork/lorawan-stack/issues/3874
+					'counter'     => isset($message['uplink_message']['f_cnt']) ? $message['uplink_message']['f_cnt'] : 0,
 				];
 			}
-
 
 			$gateways = $metadata['gateways'];
 			if ($gateways_filter) {
