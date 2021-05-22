@@ -65,6 +65,7 @@
 				<th>Firmware</th>
 				<th>Position</th>
 				<th>Fcnt</th>
+				<th>TTN version</th>
 				<th>Gateways</th>
 				<th>Distance</th>
 				<th>RSSI</th>
@@ -348,6 +349,8 @@ EOF;
 				}
 
 				output_cell($rowspan, $metadata['counter']);
+
+				output_cell($rowspan, $row['source']);
 			} else {
 				//echo("  <td colspan=\"6\"></td>");
 			}
