@@ -371,7 +371,7 @@ EOF;
 					echo("  <td>-</td>\n");
 				echo("  <td>" . htmlspecialchars($gwdata["rssi"]) . "</td>\n");
 				echo("  <td>" . htmlspecialchars($gwdata["snr"]) . "</td>\n");
-				echo("  <td>" . htmlspecialchars($metadata["frequency"]) . "Mhz, " . htmlspecialchars($metadata["data_rate"]) . ", " .htmlspecialchars($metadata["coding_rate"]) . "CR</td>\n");
+				echo("  <td>" . htmlspecialchars($metadata["frequency"]) . "MHz, " . htmlspecialchars($metadata["data_rate"]) . ", " .htmlspecialchars($metadata["coding_rate"]) . "CR</td>\n");
 
 				if (!array_key_exists($gw_id, $stations_per_gateway)) {
 					$stations_per_gateway[$gw_id] = array();
