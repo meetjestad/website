@@ -401,7 +401,7 @@ EOF;
 
 				$stations_per_count[$count][] = $station;
 			}
-			ksort($stations_per_count);
+			krsort($stations_per_count);
 			foreach($stations_per_count as $count => $stations) {
 				$stationlist = implode("", array_map('node_button', $stations));
 				echo("<tr><td>".htmlspecialchars($count)."</td><td>".$stationlist."</td></tr>\n");
