@@ -152,6 +152,7 @@ EOF;
 		if ($gw_data && array_key_exists('latitude', $gw_data) && $gw_data['latitude'] && array_key_exists('longitude', $gw_data) && $gw_data['longitude']) {
 			$location_url_html = htmlspecialchars('http://www.openstreetmap.org/?mlat=' . rawurlencode($gw_data['latitude']). "&mlon=" . rawurlencode($gw_data['longitude']));
 		}
+		$location_ttn_html = "https://ttnmapper.org/gateways/?gateway=$gw_id&startdate=&enddate=&gateways=on&points=on";
 		return <<<EOF
 <span class="dropdown">
   <a class="dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -159,8 +160,9 @@ EOF;
   </a>
 
   <div class="dropdown-menu">
-    <a class="dropdown-item gw_filter" href="$filter_url_html">Show only messages received by $gw_html</a>
-    <a class="dropdown-item gw_location" href="$location_url_html">Show gateway location</a>
+    <a class="dropdown-item gw_filter"   href="$filter_url_html">Show only messages received by $gw_html</a>
+    <a class="dropdown-item gw_location" href="$location_url_html">Show gateway on map</a>
+    <a class="dropdown-item gw_loc_ttn"  href="$location_ttn_html">Show gateway on TTN Mapper</a>
   </div>
 </div>
 EOF;
