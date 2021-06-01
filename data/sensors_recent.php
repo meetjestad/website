@@ -83,6 +83,8 @@
 	else
 		$limit = 200;
 
+	$WHERE = "1";
+
 	// Compatibility with existing links
 	if (isset($_GET['sensor']))
 		$_GET['sensors'] = $_GET['sensor'];
@@ -94,10 +96,11 @@
 		foreach ($sensors as &$id)
 			$id = (int)$id;
 		$sensors = implode(',', $sensors);
-		$WHERE = "WHERE msr.station_id IN ($sensors)";
-	} else {
-		$WHERE = "";
+		$WHERE .= " AND msr.station_id IN ($sensors)";
 	}
+
+	if (isset($_GET['source']))
+		$WHERE .= ' AND msg.source = "' . $database->real_escape_string($_GET['source']) . '"';
 
 	$gateways_filter = false;
 	if (isset($_GET['gateways']))
@@ -108,7 +111,7 @@
 		$show_other_gateways = (bool)$_GET['show_other_gateways'];
 
 
-	$result = $database->query("SELECT msr.*, msg.message, msg.source FROM sensors_measurement AS msr LEFT JOIN sensors_message AS msg ON (msg.id = msr.message_id) $WHERE ORDER BY msr.timestamp DESC LIMIT $limit");
+	$result = $database->query("SELECT msr.*, msg.message, msg.source FROM sensors_measurement AS msr LEFT JOIN sensors_message AS msg ON (msg.id = msr.message_id) WHERE $WHERE ORDER BY msr.timestamp DESC LIMIT $limit");
 
 	$count_per_station = array();
 	$stations_per_gateway = array();
