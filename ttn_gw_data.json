@@ -1,0 +1,306 @@
+{
+	"1dee0b64b020eec4": {
+	 	"alias": "Meetjestad #1 (De WAR)",
+		"latitude": 52.16270314,
+		"longitude": 5.37691284,
+		"altitude": 20
+	},
+	"mjs-gateway-1": {
+		"alias": "Meetjestad #1 (De WAR)",
+		"latitude": 52.16270314,
+		"longitude": 5.37691284,
+		"altitude": 20
+	},
+	"mjs-gateway-3": {
+		"alias": "Meetjestad #3 (Berghotel)",
+		"latitude": 52.14364015,
+		"longitude": 5.36431811,
+		"altitude": 40
+	},
+	"eui-1dee1cc11cba7539": {
+		"alias": "Meetjestad #4 (De Koperhorst)",
+		"latitude": 52.17026767,
+		"longitude": 5.39317479,
+		"altitude": 20
+	},
+	"mjs-gateway-4": {
+		"alias": "Meetjestad #4 (De Koperhorst)",
+		"latitude": 52.17026767,
+		"longitude": 5.39317479,
+		"altitude": 20
+	},
+	"1def5a0000000202": {
+		"alias": "Meetjestad #5 (Schothorst)",
+		"latitude": 52.17200,
+		"longitude": 5.39119,
+		"altitude": 5
+	},
+	"mjs-gateway-5": {
+		"alias": "Meetjestad #5 (Schothorst-W)",
+		"latitude": 52.17200,
+		"longitude": 5.39119,
+		"altitude": 5
+	},
+	"wietse": {
+		"alias": "(Schothorst-N)",
+		"latitude": 52.1743212,
+		"longitude": 5.3850384,
+		"altitude": {}
+	},
+	"mjs-gateway-6": {
+		"alias": "Meetjestad #6 (La Balise)",
+		"latitude": 52.20608615,
+		"longitude": 5.36632486,
+		"altitude": 50
+	},
+	"tellrs_lgw_01": {
+		"alias": "Tellrs #1 (Stadsring Amersfoort)",
+		"latitude": 52.154938,
+		"longitude": 5.3833065,
+		"altitude": 10,
+		"gtw_trusted": 1
+	},
+	"tellrs_lgw_02": {
+		"alias": "Tellrs #2 (Muurhuizen Amersfoort)",
+		"latitude": 52.154404,
+		"longitude": 5.39022977,
+		"altitude": 10,
+		"gtw_trusted": 1
+	},
+	"eui-7076ff00560502b5": {
+		"alias": "(JvOldenbarnevelt Amersfoort)",
+		"latitude": 52.150065,
+		"longitude": 5.3678346,
+		"altitude": 30
+	},
+	"eui-0000024b080e020a": {
+		"alias": "(NH Hotel Amersfoort)",
+		"latitude": 52.15450696,
+		"longitude": 5.37987294,
+		"altitude": 40
+	},
+	"eui-7076ff00560502a3": {
+		"alias": "(Parkschool Amersfoort)",
+		"latitude": 52.175995,
+		"longitude": 5.3952518,
+		"altitude": 4
+	},
+	"eui-313532351a006300": {
+		"alias": "ph4x.ampr (Nieuwland Amersfoort)",
+		"latitude": 52.206719,
+		"longitude": 5.3706134,
+		"altitude": {}
+	},
+	"eui-b827ebfffe9e9a7a": {
+		"alias": "RAK 7246 (Noordewierweg Amersfoort)",
+		"latitude": 52.1586314,
+		"longitude": 5.3706823,
+		"altitude": {}
+	},
+	"eui-fcc23dfffe0f0bc2": {
+		"alias": "Skylab/Intermax (Railcenter Amersfoort)",
+		"latitude": 52.1563304,
+		"longitude": 5.3658924,
+		"altitude": {}
+	},
+	"gw-nl-xxx": {
+		"alias": "Piet Mondriaanplein (Amersfoort)",
+		"latitude": 52.1544856,
+		"longitude": 5.3724713,
+		"altitude": {}
+	},
+	"eui-fcc24dfffe0dfd80": {
+		"alias": "Roof Wienke (Amersfoort)",
+		"latitude": 52.0680493,
+		"longitude": 5.1202941,
+		"altitude": {}
+	},
+	"eui-58a0cbfffe8019e0": {
+		"alias": "WSVV Vathorst (Amersfoort)",
+		"latitude": 52.1965141,
+		"longitude": 5.3708292,
+		"altitude": {}
+	},
+
+	"eui-0031552048001a03": {
+		"alias": "De Mheen (Apeldoorn)",
+		"latitude": 52.2220204,
+		"longitude": 5.9932308,
+		"altitude": {}
+	},
+	"eui-b827ebfffe0ee7c9": {
+		"alias": "(Ugchelen Apeldoorn)",
+		"latitude": 52.186500,
+		"longitude": 5.948600,
+		"altitude": 65
+	},
+
+	"mjs-bergen-gateway-1": {
+		"alias": "mjs Bergen #1 (Mindeveien)",
+		"latitude": 60.3623150,
+		"longitude": 5.3403810,
+		"altitude": {}
+	},
+	"mjs-bergen-gateway-2": {
+		"alias": "mjs Bergen #2 (Sjogaten)",
+		"latitude": 60.4083666,
+		"longitude": 5.3242997,
+		"altitude": {}
+	},
+	"mjs-bergen-gateway-3": {
+		"alias": "mjs Bergen #3 (Ole Irgens)",
+		"latitude": 60.390500,
+		"longitude": 5.344300,
+		"altitude": {}
+	},
+	"mjs-bergen-gateway-5": {
+		"alias": "mjs Bergen #5 (Laksevag)",
+		"latitude": 60.3892465,
+		"longitude": 5.2853558,
+		"altitude": {}
+	},
+	"mjs-bergen-gateway-6": {
+		"alias": "mjs Bergen #6 (Soregarden)",
+		"latitude": 60.3509665,
+		"longitude": 5.3087475,
+		"altitude": {}
+	},
+	"eui-b827ebfffe959997": {
+		"alias": "Vann Dodehavet (Bergen)",
+		"latitude": 60.3352143,
+		"longitude": 5.3390541,
+		"altitude": {}
+	},
+	"paradis-bergen-gateway-01": {
+		"alias": "Paradis (Bergen)",
+		"latitude": 60.337708,
+		"longitude": 5.346036,
+		"altitude": {}
+	},
+
+	"eui-0000024b080602ed": {
+		"alias": "#1 (De Bilt)",
+		"latitude": 52.102070,
+		"longitude": 5.17968,
+		"altitude": 2
+	},
+	"eui-ff0078a504f5b057": {
+		"alias": "#2 (De Bilt)",
+		"latitude": 52.102020,
+		"longitude": 5.17966,
+		"altitude": 10
+	},
+	"eui-000078a504f5b057": {
+		"alias": "#3 (De Bilt)",
+		"latitude": 52.1020203,
+		"longitude": 5.1796598,
+		"altitude": {}
+	},
+
+	"eui-000080029c09ded1": {
+		"alias": "(Enschede O)",
+		"latitude": 52.221320,
+		"longitude": 6.907164,
+		"altitude": 53
+	},
+	"eui-aa555a000806053f": {
+		"alias": "(Enschede C)",
+		"latitude": 52.221210,
+		"longitude": 6.8857374,
+		"altitude": {}
+	},
+	"eui-1dee039aac75c307": {
+		"alias": "(Enschede ZO)",
+		"latitude": 52.2165,
+		"longitude": 6.9007,
+		"altitude": {}
+	},
+	"eui-0001fcc23d0f8d25": {
+		"alias": "IO Twente 01 (Enschede N)",
+		"latitude": 52.233076,
+		"longitude": 6.89071,
+		"altitude": {}
+	},
+
+	"ttn_apeldoorn_radiokootwijk": {
+		"alias": "(Radio Kootwijk)",
+		"latitude": 52.176243,
+		"longitude": 5.8340764,
+		"altitude": 76
+	},
+
+	"eui-1dee1f5bc563aa18": {
+		"alias": "Omroeptoren (Hilversum)",
+		"latitude": 52.2426129,
+		"longitude": 5.1644541,
+		"altitude": {}
+	},
+
+	"eui-aa555a0000100017": {
+		"alias": "(Het Laar Tilburg)",
+		"latitude": 51.540176,
+		"longitude": 5.049794,
+		"altitude": 44
+	},
+	"eui-aa555a0000100023": {
+		"alias": "Mozartflat (Tilburg)",
+		"latitude": 51.5816684,
+		"longitude": 5.0780513,
+		"altitude": {}
+	},
+	"eui-aa555a0000100024": {
+		"alias": "TV-toren (Loon op Zand)",
+		"latitude": 51.6073724,
+		"longitude": 5.0762984,
+		"altitude": {}
+	},
+	"eui-aa555a0000100064": {
+		"alias": "(Vossenberg Tilburg)",
+		"latitude": 51.592430,
+		"longitude": 5.015273,
+		"altitude": 43
+	},
+	"eui-aa555a0000100065": {
+		"alias": "(Universiteit Tilburg)",
+		"latitude": 51.56290,
+		"longitude": 5.049794,
+		"altitude": {}
+	},
+
+	"eui-0000024b080e0ffd": {
+		"alias": "(Croeselaan Utrecht)",
+		"latitude": 52.08558,
+		"longitude": 5.109230,
+		"altitude": 99
+	},
+	"eui-58a0cbfffe80274c": {
+		"alias": "(Weerdsingel OZ Utrecht)",
+		"latitude": 52.0969265,
+		"longitude": 5.1200544,
+		"altitude": {}
+	},
+	"eui-a840411ee7504150": {
+		"alias": "(Schutstraat Utrecht)",
+		"latitude": 52.10014003,
+		"longitude": 5.10394806,
+		"altitude": {}
+	},
+	"eui-58a0cbfffe800e5c": {
+		"alias": "Peterse (Utrecht)",
+		"latitude": 52.1041754,
+		"longitude": 5.1199441,
+		"altitude": {}
+	},
+	"eui-0000024b08030919": {
+		"alias": "(Gerbrandytoren#1 IJsselstein)",
+		"latitude": 52.010060,
+		"longitude": 5.053670,
+		"altitude": 75
+	},
+	"eui-0000024b08030954": {
+		"alias": "(Gerbrandytoren#2 IJsselstein)",
+		"latitude": 52.010050,
+		"longitude": 5.053620,
+		"altitude": 77
+	}
+}

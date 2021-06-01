@@ -32,6 +32,9 @@
 
 	if (file_exists('../sensorsets.json')) $sensorsets = json_decode(file_get_contents('../sensorsets.json'), true);
 	else $sensorsets = array();
+
+	if (file_exists('../ttn_gw_data.json')) $ttn_gw_data = json_decode(file_get_contents('../ttn_gw_data.json'), true);
+	else $ttn_gw_data = array();
 ?>
 <!DOCTYPE html>
 <html class="no-js">
@@ -62,6 +65,7 @@
 				<th>Firmware</th>
 				<th>Position</th>
 				<th>Fcnt</th>
+				<th>TTN version</th>
 				<th>Gateways</th>
 				<th>Distance</th>
 				<th>RSSI</th>
@@ -79,6 +83,8 @@
 	else
 		$limit = 200;
 
+	$WHERE = "1";
+
 	// Compatibility with existing links
 	if (isset($_GET['sensor']))
 		$_GET['sensors'] = $_GET['sensor'];
@@ -90,10 +96,11 @@
 		foreach ($sensors as &$id)
 			$id = (int)$id;
 		$sensors = implode(',', $sensors);
-		$WHERE = "WHERE msr.station_id IN ($sensors)";
-	} else {
-		$WHERE = "";
+		$WHERE .= " AND msr.station_id IN ($sensors)";
 	}
+
+	if (isset($_GET['source']))
+		$WHERE .= ' AND msg.source = "' . $database->real_escape_string($_GET['source']) . '"';
 
 	$gateways_filter = false;
 	if (isset($_GET['gateways']))
@@ -103,19 +110,9 @@
 	if (isset($_GET['show_other_gateways']))
 		$show_other_gateways = (bool)$_GET['show_other_gateways'];
 
-	$gateway_descriptions = [
-		"eui-1dee0b64b020eec4" => "Meetjestad #1 (De WAR)",
-		"mjs-gateway-1" => "Meetjestad #1 (De WAR)",
-		"mjs-gateway-3" => "Meetjestad #3 (Berghotel)",
-		"mjs-gateway-6" => "Meetjestad #6 (La Balise)",
-		"eui-1dee1cc11cba7539" => "Meetjestad #4 (De Koperhorst)",
-		"mjs-gateway-4" => "Meetjestad #4 (De Koperhorst)",
-		"eui-0000024b080e020a" => "(NH Hotel Amersfoort)",
-		"eui-0000024b080602ed" => "(De Bilt)",
-		"eui-000078a504f5b057" => "(De Bilt)",
-	];
 
-	$result = $database->query("SELECT msr.*, msg.message FROM sensors_measurement AS msr LEFT JOIN sensors_message AS msg ON (msg.id = msr.message_id) $WHERE ORDER BY msr.timestamp DESC LIMIT $limit");
+	$result = $database->query("SELECT msr.*, msg.message, msg.source FROM sensors_measurement AS msr LEFT JOIN sensors_message AS msg ON (msg.id = msr.message_id) WHERE $WHERE ORDER BY msr.timestamp DESC LIMIT $limit");
+
 	$count_per_station = array();
 	$stations_per_gateway = array();
 	$messagecount_per_gateway = array();
@@ -139,10 +136,11 @@ EOF;
 	}
 
 	function gateway_button($gw_id, $gw_data = null) {
-		global $gateway_descriptions;
 
-		if (array_key_exists($gw_id, $gateway_descriptions))
-			$gw = $gateway_descriptions[$gw_id];
+		if ($gw_id == 'unknown')
+			return '<i>unknown</i>';
+		if (isset($gw_data['alias']))
+			$gw = $gw_data['alias'];
 		else
 			$gw = $gw_id;
 		$gw_html = htmlspecialchars($gw);
@@ -152,6 +150,7 @@ EOF;
 		if ($gw_data && array_key_exists('latitude', $gw_data) && $gw_data['latitude'] && array_key_exists('longitude', $gw_data) && $gw_data['longitude']) {
 			$location_url_html = htmlspecialchars('http://www.openstreetmap.org/?mlat=' . rawurlencode($gw_data['latitude']). "&mlon=" . rawurlencode($gw_data['longitude']));
 		}
+		$location_ttn_html = "https://ttnmapper.org/gateways/?gateway=$gw_id&startdate=&enddate=&gateways=on&points=on";
 		return <<<EOF
 <span class="dropdown">
   <a class="dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -159,8 +158,9 @@ EOF;
   </a>
 
   <div class="dropdown-menu">
-    <a class="dropdown-item gw_filter" href="$filter_url_html">Show only messages received by $gw_html</a>
-    <a class="dropdown-item gw_location" href="$location_url_html">Show gateway location</a>
+    <a class="dropdown-item gw_filter"   href="$filter_url_html">Show only messages received by $gw_html</a>
+    <a class="dropdown-item gw_location" href="$location_url_html">Show gateway on map</a>
+    <a class="dropdown-item gw_loc_ttn"  href="$location_ttn_html">Show gateway on TTN Mapper</a>
   </div>
 </div>
 EOF;
@@ -173,12 +173,11 @@ EOF;
 	while($row = $result->fetch_array(MYSQLI_ASSOC)) {
 		if ($row['message']) {
 			$message = json_decode($row['message'], true);
-			$metadata = $message['metadata'];
 
-			if (!array_key_exists('gateways', $metadata)) {
+			if ($row['source'] == 'ttn.v1') {
 				$gateways = [];
 
-				// Convert TTN staging to production format
+				// Convert TTN v1=staging to v2=production format
 				foreach ($metadata as $meta) {
 					$meta['gtw_id'] = 'eui-' . strtolower($meta['gateway_eui']);
 					$meta['snr'] = $meta['lsnr'];
@@ -186,13 +185,56 @@ EOF;
 				}
 
 				$metadata = [
-					'gateways' => $gateways,
-					'frequency' => $metadata[0]['frequency'],
-					'data_rate' => $metadata[0]['datarate'],
-					'coding_rate' => $metadata[0]['codingrate'],
+					'gateways'    => $message['metadata']['gateways'],
+					'frequency'   => $message['metadata']['frequency'],
+					'data_rate'   => $message['metadata']['datarate'],
+					'coding_rate' => $message['metadata']['codingrate'],
+					'counter'     => $message['counter'],
+				];
+
+			} else if ($row['source'] == 'ttn.v2') {
+				$metadata = [
+					'gateways'    => $message['metadata']['gateways'],
+					'frequency'   => $message['metadata']['frequency'],
+					'data_rate'   => $message['metadata']['data_rate'],
+					'coding_rate' => $message['metadata']['coding_rate'],
+					'counter'     => $message['counter'],
+				];
+
+			} else if ($row['source'] == 'ttn.v3') {
+
+				// Convert TTN v3 to v2 format
+
+				// Retrieve gateway details
+				$gateways = [];
+				foreach ($message['uplink_message']['rx_metadata'] as $meta) {
+					$meta['gtw_id'] = $meta['gateway_ids']['gateway_id'];
+					$meta['gtw_eui'] = "";
+					if (isset($meta['gateway_ids']['eui']))
+						$meta['gtw_eui'] = $meta['gateway_ids']['eui'];
+					// Gateways bridge from ttnv2 do not include their id, see:
+					// https://github.com/packetbroker/api/issues/23#issuecomment-852021215
+					if ($meta['gtw_id'] == 'packetbroker')
+						$meta['gtw_id'] = 'unknown';
+					// Default values (zeroes) are omitted: https://github.com/TheThingsNetwork/lorawan-stack/issues/3874
+					if (!isset($meta['snr']))
+						$meta['snr'] = 0;
+
+					$gateways[] = $meta;
+				}
+
+				$spreading_factor = $message['uplink_message']['settings']['data_rate']['lora']['spreading_factor'];
+				$bandwidth =        $message['uplink_message']['settings']['data_rate']['lora']['bandwidth'] / 1000;
+				$data_rate = sprintf("SF%sBW%s", $spreading_factor, $bandwidth);
+				$metadata = [
+					'gateways'    => $gateways,
+					'frequency'   => $message['uplink_message']['settings']['frequency'] / 1000000.,
+					'coding_rate' => $message['uplink_message']['settings']['coding_rate'],
+					'data_rate'   => $data_rate,
+					// Default values (zeroes) are omitted: https://github.com/TheThingsNetwork/lorawan-stack/issues/3874
+					'counter'     => isset($message['uplink_message']['f_cnt']) ? $message['uplink_message']['f_cnt'] : 0,
 				];
 			}
-
 
 			$gateways = $metadata['gateways'];
 			if ($gateways_filter) {
@@ -222,6 +264,33 @@ EOF;
 			$rowspan = 1;
 		}
 
+		// enhance gwdata with alias and geo
+		foreach ($gateways as &$gwdata) {
+			$gtw_id = $gwdata['gtw_id'];
+			if ($gwdata['gtw_id'] != 'unknown') {
+				// add alias
+				if (isset($ttn_gw_data[$gtw_id]['alias']))
+					$gwdata['alias'] = $ttn_gw_data[$gtw_id]['alias'];
+				// add geo if missing
+				if (!isset($gwdata['longitude']) || !isset($gwdata['latitude'])) {
+					if (isset($ttn_gw_data[$gtw_id]['latitude']))
+						$gwdata['latitude'] = $ttn_gw_data[$gtw_id]['latitude'];
+					if (isset($ttn_gw_data[$gtw_id]['longitude']))
+						$gwdata['longitude'] = $ttn_gw_data[$gtw_id]['longitude'];
+					if (isset($ttn_gw_data[$gtw_id]['altitude']))
+						$gwdata['altitude'] = $ttn_gw_data[$gtw_id]['altitude'];
+				}
+			}
+			if (!isset($gwdata['latitude']))
+				$gwdata['latitude'] = 0;
+			if (!isset($gwdata['longitude']))
+				$gwdata['longitude'] = 0;
+			if (!isset($gwdata['altitude']))
+				$gwdata['altitude'] = 0;
+
+		}
+		unset($gwdata);
+
 		$messagecount++;
 
 		if (array_key_exists($row['station_id'], $count_per_station))
@@ -240,7 +309,7 @@ EOF;
 				output_cell($rowspan, node_button($row["station_id"]));
 
 				$datetime = DateTime::createFromFormat('Y-m-d H:i:s', $row['timestamp'], new DateTimeZone('UTC'));
-				$datetime->setTimeZone(new DateTImeZone('Europe/Amsterdam'));
+				$datetime->setTimeZone(new DateTimeZone('Europe/Amsterdam'));
 				output_cell($rowspan, $datetime->format('Y-m-d H:i:s'));
 				output_cell($rowspan, $row["temperature"] . "°C");
 				output_cell($rowspan, $row["humidity"] . "%");
@@ -265,24 +334,26 @@ EOF;
 				} else {
 					output_cell($rowspan, '-');
 				}
+
 				output_cell($rowspan, $row["extra"]);
+
 				if ($row['firmware_version'] === null)
 					output_cell($rowspan, '< v1');
-				else if ($row['firmware_version'] !== 255)
+				else if ($row['firmware_version'] !== '255')
 					output_cell($rowspan, '<a href="https://github.com/meetjestad/mjs_firmware/tree/v' . $row['firmware_version'] . '">v' . $row['firmware_version'] . '</a>');
 				else
 					output_cell($rowspan, 'v' . $row['firmware_version']);
+
 				if ($row['latitude'] == '0.0' && $row['longitude'] == '0.0') {
 					output_cell($rowspan, 'No position');
 				} else {
 					$url = "http://www.openstreetmap.org/?mlat=" . $row['latitude'] . "&amp;mlon=" . $row['longitude'];
 					output_cell($rowspan, "<a href=\"" . $url . "\">" . $row["latitude"] . " / " . $row["longitude"] . "</a>");
 				}
-				if (array_key_exists('counter', $message)) {
-					output_cell($rowspan, $message['counter']);
-				} else {
-					output_cell($rowspan, '-');
-				}
+
+				output_cell($rowspan, $metadata['counter']);
+
+				output_cell($rowspan, $row['source']);
 			} else {
 				//echo("  <td colspan=\"6\"></td>");
 			}
@@ -303,7 +374,7 @@ EOF;
 					echo("  <td>-</td>\n");
 				echo("  <td>" . htmlspecialchars($gwdata["rssi"]) . "</td>\n");
 				echo("  <td>" . htmlspecialchars($gwdata["snr"]) . "</td>\n");
-				echo("  <td>" . htmlspecialchars($metadata["frequency"]) . "Mhz, " . htmlspecialchars($metadata["data_rate"]) . ", " .htmlspecialchars($metadata["coding_rate"]) . "CR</td>\n");
+				echo("  <td>" . htmlspecialchars($metadata["frequency"]) . "MHz, " . htmlspecialchars($metadata["data_rate"]) . ", " .htmlspecialchars($metadata["coding_rate"]) . "CR</td>\n");
 
 				if (!array_key_exists($gw_id, $stations_per_gateway)) {
 					$stations_per_gateway[$gw_id] = array();
@@ -333,7 +404,7 @@ EOF;
 
 				$stations_per_count[$count][] = $station;
 			}
-			ksort($stations_per_count);
+			krsort($stations_per_count);
 			foreach($stations_per_count as $count => $stations) {
 				$stationlist = implode("", array_map('node_button', $stations));
 				echo("<tr><td>".htmlspecialchars($count)."</td><td>".$stationlist."</td></tr>\n");
