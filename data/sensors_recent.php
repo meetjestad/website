@@ -220,6 +220,13 @@ EOF;
 					if (!isset($meta['snr']))
 						$meta['snr'] = 0;
 
+					if (isset($meta['location'])) {
+						$meta['longitude'] = $meta['location']['longitude'];
+						$meta['latitude'] = $meta['location']['latitude'];
+						if (isset($meta['altitude']['altitude']))
+							$meta['altitude'] = $meta['altitude']['altitude'];
+					}
+
 					$gateways[] = $meta;
 				}
 
