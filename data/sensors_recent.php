@@ -260,43 +260,39 @@ EOF;
 				if (!$gateways)
 					continue;
 			}
-			$rowspan = count($gateways);
-
 			// Sort by LSR, descending
 			usort($gateways, function($a, $b) { return $a['snr'] < $b['snr']; });
-		} else {
-			$message = [];
-			$metadata = [];
-			$gateways = [[]];
-			$rowspan = 1;
-		}
 
-		// enhance gwdata with alias and geo
-		foreach ($gateways as &$gwdata) {
-			$gtw_id = $gwdata['gtw_id'];
-			if ($gwdata['gtw_id'] != 'unknown') {
-				// add alias
-				if (isset($ttn_gw_data[$gtw_id]['alias']))
-					$gwdata['alias'] = $ttn_gw_data[$gtw_id]['alias'];
-				// add geo if missing
-				if (!isset($gwdata['longitude']) || !isset($gwdata['latitude'])) {
-					if (isset($ttn_gw_data[$gtw_id]['latitude']))
-						$gwdata['latitude'] = $ttn_gw_data[$gtw_id]['latitude'];
-					if (isset($ttn_gw_data[$gtw_id]['longitude']))
-						$gwdata['longitude'] = $ttn_gw_data[$gtw_id]['longitude'];
-					if (isset($ttn_gw_data[$gtw_id]['altitude']))
-						$gwdata['altitude'] = $ttn_gw_data[$gtw_id]['altitude'];
+			// enhance gwdata with alias and geo
+			foreach ($gateways as &$gwdata) {
+				$gtw_id = $gwdata['gtw_id'];
+				if ($gwdata['gtw_id'] != 'unknown') {
+					// add alias
+					if (isset($ttn_gw_data[$gtw_id]['alias']))
+						$gwdata['alias'] = $ttn_gw_data[$gtw_id]['alias'];
+					// add geo if missing
+					if (!isset($gwdata['longitude']) || !isset($gwdata['latitude'])) {
+						if (isset($ttn_gw_data[$gtw_id]['latitude']))
+							$gwdata['latitude'] = $ttn_gw_data[$gtw_id]['latitude'];
+						if (isset($ttn_gw_data[$gtw_id]['longitude']))
+							$gwdata['longitude'] = $ttn_gw_data[$gtw_id]['longitude'];
+						if (isset($ttn_gw_data[$gtw_id]['altitude']))
+							$gwdata['altitude'] = $ttn_gw_data[$gtw_id]['altitude'];
+					}
 				}
-			}
-			if (!isset($gwdata['latitude']))
-				$gwdata['latitude'] = 0;
-			if (!isset($gwdata['longitude']))
-				$gwdata['longitude'] = 0;
-			if (!isset($gwdata['altitude']))
-				$gwdata['altitude'] = 0;
+				if (!isset($gwdata['latitude']))
+					$gwdata['latitude'] = 0;
+				if (!isset($gwdata['longitude']))
+					$gwdata['longitude'] = 0;
+				if (!isset($gwdata['altitude']))
+					$gwdata['altitude'] = 0;
 
+			}
+			unset($gwdata);
+		} else {
+			$metadata = ['counter' => 0];
+			$gateways = [[]];
 		}
-		unset($gwdata);
 
 		$messagecount++;
 
@@ -306,6 +302,7 @@ EOF;
 			$count_per_station[$row['station_id']] = 1;
 
 		$first = true;
+		$rowspan = count($gateways);
 		foreach ($gateways as $gwdata) {
 			echo("<tr>\n");
 			if ($first) {
