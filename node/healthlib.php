@@ -73,7 +73,8 @@ function health($id, $layout) {
 			$message = json_decode($row['message'], true);
 			$src = $row['source'];
 			if ($src == 'ttn.v1' || $src == 'ttn.v2') $fcnt = $message['counter'];
-			if ($src == 'ttn.v3') $fcnt = $message['uplink_message']['f_cnt'];
+			// Default values (zeroes) are omitted: https://github.com/TheThingsNetwork/lorawan-stack/issues/3874
+			if ($src == 'ttn.v3') $fcnt = isset($message['uplink_message']['f_cnt']) ? $message['uplink_message']['f_cnt'] : 0;
 			if ($rows==0) $fcnt1 = $fcnt;
 			elseif ($fcnt==0 || $fcnt > $lastfcnt) break;
 			$rows++;
