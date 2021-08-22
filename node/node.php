@@ -77,6 +77,9 @@
 			th {
 				text-align:left;
 			}
+			td {
+				vertical-align: top;
+			}
 			.pane {
 				flex: 1;
 				width: 30%;

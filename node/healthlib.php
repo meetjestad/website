@@ -62,6 +62,7 @@ function health($id, $layout) {
 		$lastfcnt = 0;
 		$fcnt1 = 0;
 		$fcnt2 = 0;
+		$radiosrc = null;
 		while($row = $result->fetch_array(MYSQLI_ASSOC)) {
 			if ($rows==0) { // most recent message
 				$last_seen = $row["timestamp"];
@@ -79,6 +80,8 @@ function health($id, $layout) {
 			$lastfcnt = $fcnt;
 			$hum[] = $row['humidity'];
 			$tmp[] = $row['temperature'];
+			// Use the last src
+			$radiosrc =  $src;
 		}
 		// Assess radio reception
 		$fcnt2 = $lastfcnt;
@@ -119,8 +122,8 @@ function health($id, $layout) {
 		$gpscount = $rows;
 		$radiocount = $fcnt1 - $fcnt2 + 1;
 
-		$q = $database->prepare("REPLACE INTO sensors_health SET id = ?, last_seen = ?, humhealth = ?, perchasgps = ?, radiosuccess = ?, supply = ?, longitude = ?, latitude = ?, radiocount = ?, gpscount = ?, percinvalidhum = ?, percinvaliddhum = ?, Rtmphum = ?");
-		$q->bind_param('isddddddiiddd', $id, $last_seen, $humhealth, $perchasgps, $radiosuccess, $supply, $longitude, $latitude, $radiocount, $gpscount, $percinvalidhum, $percinvaliddhum, $Rtmphum);
+		$q = $database->prepare("REPLACE INTO sensors_health SET id = ?, last_seen = ?, humhealth = ?, perchasgps = ?, radiosuccess = ?, supply = ?, longitude = ?, latitude = ?, radiocount = ?, gpscount = ?, percinvalidhum = ?, percinvaliddhum = ?, Rtmphum = ?, radiosrc = ?");
+		$q->bind_param('isddddddiiddds', $id, $last_seen, $humhealth, $perchasgps, $radiosuccess, $supply, $longitude, $latitude, $radiocount, $gpscount, $percinvalidhum, $percinvaliddhum, $Rtmphum, $radiosrc);
 		$q->execute();
 		$fromcache = false;
 	}
@@ -138,6 +141,7 @@ function health($id, $layout) {
 		$percinvalidhum = $cacheRow["percinvalidhum"];;
 		$percinvaliddhum = $cacheRow["percinvaliddhum"];;
 		$Rtmphum = $cacheRow["Rtmphum"];;
+		$radiosrc = $cacheRow["radiosrc"];;
 		$fromcache = true;
 	}
 
@@ -172,6 +176,10 @@ function health($id, $layout) {
 		elseif ($radiosuccess>=0.5) $radiolight = 'orange';
 		else $radiolight = 'red';
 	}
+	if ($radiosrc) {
+		if ($radiosrc == "ttn.v3") $radiosrclight = 'lime';
+		else $radiosrclight = 'red';
+	}
 
 	if ($perchasgps>0.9) $gpslight = 'lime';
 	elseif ($perchasgps>0.5) $gpslight = 'orange';
@@ -190,6 +198,12 @@ function health($id, $layout) {
 			echo '<tr><td style="color:'.htmlspecialchars($supplylight).';">●</td><td>Voltage</td><td>'.htmlspecialchars($supply).'V</td></tr>';
 			echo '<tr><th colspan="3">Radio</th></tr>';
 			if ($radiosuccess) echo '<tr><td style="color:'.htmlspecialchars($radiolight).';">●</td><td>Delivery</td><td>'.htmlspecialchars(round(100.0*$radiosuccess)).' % of last '.htmlspecialchars($radiocount).' packets</td></tr>';
+			if ($radiosrc) {
+				echo '<tr><td style="color:'.htmlspecialchars($radiosrclight).';">●</td><td>Network</td><td>'.htmlspecialchars($radiosrc);
+				if ($radiosrclight == 'red')
+					echo '<br>To migrate your station to the new TTN v3 network, restart it. <a href="/#ttnv3_migration">More info.</a>';
+				echo '</td></tr>';
+			}
 			echo '<tr><th colspan="3">Sensors</th></tr>';
 			echo '<tr><td style="color:'.htmlspecialchars($gpslight).';">●</td><td>GPS</td><td>'.htmlspecialchars(round(100.0*$perchasgps)).' % present in last '.htmlspecialchars($gpscount).' packets</td></tr>';
 			echo '<tr><td style="color:'.htmlspecialchars($humiditylight).';">●</td><td>Humidity</td><td>'.htmlspecialchars(round(100.0*$percinvalidhum)).' % invalid Φ (&lt;10% or &gt;100%)</td></tr>';
@@ -204,6 +218,7 @@ function health($id, $layout) {
 			echo '<td><span style="color:'.htmlspecialchars($supplylight).';">●</span> '.htmlspecialchars($supply).'V</td>';
 			echo '<td><span style="color:'.htmlspecialchars($gpslight).';">●</span>'.htmlspecialchars(round(100.0*$perchasgps)).' % up</td>';
 			echo '<td><span style="color:'.htmlspecialchars($humiditylight).';">●</span>'.($humhealth>=0.75?'ok':($humhealth>=0.5?'moderate':'bad')).'</td>';
+			echo '<td><span style="color:'.htmlspecialchars($radiosrclight).';">●</span>'.htmlspecialchars($radiosrc).'</td>';
 		break;
 		case 'json':
 			$node = array(
@@ -217,6 +232,8 @@ function health($id, $layout) {
 				"humhealth"=>$humhealth,
 				"humiditylight"=>$humiditylight,
 				"position"=>array("lon"=>$longitude, "lat"=>$latitude),
+				"radiosrclight"=>$radiosrclight,
+				"radiosrc"=>$radiosrc,
 				"fromcache"=>$fromcache,
 			);
 			echo json_encode($node);

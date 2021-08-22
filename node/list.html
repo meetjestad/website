@@ -61,6 +61,10 @@
 				display: inline-block;
 				width: 80px;
 			}
+			.colRadioSrc {
+				display: inline-block;
+				width: 80px;
+			}
 			@font-face {
 				font-family: Dosis;
 				src: url('../css/fonts/Dosis-Regular.otf');
@@ -86,6 +90,7 @@
 				<div class="colBattery">Battery</div>
 				<div class="colGPS">GPS</div>
 				<div class="colHumidity">Humidity</div>
+				<div class="colRadioSrc">Network</div>
 			</div>
 			<div id="nodelist">
 			</div>
@@ -247,7 +252,7 @@
 							row.setAttribute('onmouseover', 'highlight(' + json.id + ')');
 							row.setAttribute('onclick', 'select(' + json.id + ')');
 							row.style.cursor = 'pointer';
-							row.innerHTML = '<div class="colID"><a href="' + json.id + '" target="_blank">' + json.id + '</a></div><div class="colAlive"><span style="color:' + json.alivelight + ';">●</span> ' + (json.idletime?json.idletime + ' ago':'online') + '</div><div class="colBattery"><span style="color:' + json.supplylight + ';">●</span> ' + json.supply + 'V</div><div class="colGPS"><span style="color:' + json.gpslight + ';">●</span>' + Math.round(100.0*json.perchasgps) + ' %</div><div class="colHumidity"><span style="color:' + json.humiditylight + ';">●</span>' + (json.humhealth>=0.75?'ok':(json.humhealth>=0.5?'moderate':'bad')) + '</div>';
+							row.innerHTML = '<div class="colID"><a href="' + json.id + '" target="_blank">' + json.id + '</a></div><div class="colAlive"><span style="color:' + json.alivelight + ';">●</span> ' + (json.idletime?json.idletime + ' ago':'online') + '</div><div class="colBattery"><span style="color:' + json.supplylight + ';">●</span> ' + json.supply + 'V</div><div class="colGPS"><span style="color:' + json.gpslight + ';">●</span>' + Math.round(100.0*json.perchasgps) + ' %</div><div class="colHumidity"><span style="color:' + json.humiditylight + ';">●</span>' + (json.humhealth>=0.75?'ok':(json.humhealth>=0.5?'moderate':'bad')) + '</div><div class="colRadioSrc"><span style="color:' + json.radiosrclight + ';">●</span>' + json.radiosrc + '</div>';
 							nodelist.appendChild(row);
 
 							var lon = parseFloat(json.position.lon);
