@@ -123,7 +123,7 @@
 	<body onload="drawSeries();">
 		<div style="display:table; margin:0 auto;">
 			<img style="text-align:left; vertical-align:top;" src="../images/logo_node.png"/>
-			<div style="display:inline-block; padding:8px; font-size:22pt; font-weight:bold;"><?=$query?></div>
+			<div style="display:inline-block; padding:8px; font-size:22pt; font-weight:bold;"><?=htmlspecialchars($query)?></div>
 		</div>
 		<div id="flex">
 			<fieldset class="pane" id="paneData">
@@ -134,10 +134,10 @@
 <?php if ($offline) {?>
 						<tr><td colspan="4"><i>Warning: node is offline!</i></td>
 <?php } ?>
-						<tr><td>Temperature</td><td>T</td><td style="text-align:right;"><?=$temperature?></td><td>⁰C</td></tr>
-						<tr><td>Relative Humidity</td><td>Φ</td><td style="text-align:right;"><?=$humidity?></td><td>%</td></tr>
+						<tr><td>Temperature</td><td>T</td><td style="text-align:right;"><?=htmlspecialchars($temperature)?></td><td>⁰C</td></tr>
+						<tr><td>Relative Humidity</td><td>Φ</td><td style="text-align:right;"><?=htmlspecialchars($humidity)?></td><td>%</td></tr>
 <?php if ($light !== null) {?>
-						<tr><td>Illuminance</td><td>E</td><td style="text-align:right;"><?=$light?></td><td>lx</td></tr>
+						<tr><td>Illuminance</td><td>E</td><td style="text-align:right;"><?=htmlspecialchars($light)?></td><td>lx</td></tr>
 <?php } ?>
 					</table>
 					<b>Time series</b><br/>
@@ -162,13 +162,13 @@
 			</fieldset>
 			<fieldset class="pane">
 				<legend>node</legend>
-				<iframe width="180" height="180" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="https://www.openstreetmap.org/export/embed.html?bbox=<?=$longitude-0.01?>%2C<?=$latitude-0.005?>%2C<?=$longitude+0.01?>%2C<?=$latitude+0.005?>&amp;layer=mapnik&amp;marker=<?=$latitude?>%2C<?=$longitude?>" style="border: 1px solid black; margin-right:5px; float:left;"></iframe>
+				<iframe width="180" height="180" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="https://www.openstreetmap.org/export/embed.html?bbox=<?=htmlspecialchars($longitude-0.01)?>%2C<?=htmlspecialchars($latitude-0.005)?>%2C<?=htmlspecialchars($longitude+0.01)?>%2C<?=htmlspecialchars($latitude+0.005)?>&amp;layer=mapnik&amp;marker=<?=htmlspecialchars($latitude)?>%2C<?=htmlspecialchars($longitude)?>" style="border: 1px solid black; margin-right:5px; float:left;"></iframe>
 				<table>
 					<tr><th colspan="2">Last&nbsp;seen</th>
-					<tr><td>Date</td><td><?=$lastdate?></td></tr>
-					<tr><td>Time</td><td><?=$lasttime?></td></tr>
-					<tr><td>Lon</td><td><?=$longitude?>E</td></tr>
-					<tr><td>Lat</td><td><?=$latitude?>N</td></tr>
+					<tr><td>Date</td><td><?=htmlspecialchars($lastdate)?></td></tr>
+					<tr><td>Time</td><td><?=htmlspecialchars($lasttime)?></td></tr>
+					<tr><td>Lon</td><td><?=htmlspecialchars($longitude)?>E</td></tr>
+					<tr><td>Lat</td><td><?=htmlspecialchars($latitude)?>N</td></tr>
 				</table>
 				<p style="clear:left;"></p>
 <!--
