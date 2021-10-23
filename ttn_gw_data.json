@@ -36,10 +36,7 @@
 		"altitude": 5
 	},
 	"mjs-gateway-5": {
-		"alias": "Meetjestad #5 (Schothorst-W)",
-		"latitude": 52.17200,
-		"longitude": 5.39119,
-		"altitude": 5
+		"alias": "Meetjestad #5 (Matthijs)"
 	},
 	"wietse": {
 		"alias": "(Schothorst-N)",
@@ -85,6 +82,18 @@
 		"longitude": 5.3952518,
 		"altitude": 4
 	},
+	"okku-gw-12": {
+		"alias": "(Schothorst Amersfoort)",
+		"latitude": 52.1749734,
+		"longitude": 5.402924,
+		"altitude": ""
+	},
+	"eui-7076ff00560502b5": {
+		"alias": "(Thorbeckeplein Amersfoort)",
+		"latitude": 52.150678,
+		"longitude": 5.368442,
+		"altitude": ""
+	},
 	"eui-313532351a006300": {
 		"alias": "ph4x.ampr (Nieuwland Amersfoort)",
 		"latitude": 52.206719,
@@ -114,6 +123,12 @@
 		"latitude": 52.0680493,
 		"longitude": 5.1202941,
 		"altitude": {}
+	},
+	"lora-ph4x": {
+		"alias": "(Amersfoort-Nieuwland)",
+		"latitude": 52.2039752,
+		"longitude": 5.3811248,
+		"altitude": ""
 	},
 	"eui-58a0cbfffe8019e0": {
 		"alias": "WSVV Vathorst (Amersfoort)",
@@ -165,16 +180,52 @@
 		"longitude": 5.3087475,
 		"altitude": {}
 	},
+	"bvkf-gw-001": {
+		"alias": "bvkf Vann Geitanuken (Bergen)",
+		"latitude": 60.4730358,
+		"longitude": 5.293524,
+		"altitude": {}
+	},
 	"eui-b827ebfffe959997": {
 		"alias": "Vann Dodehavet (Bergen)",
 		"latitude": 60.3352143,
 		"longitude": 5.3390541,
 		"altitude": {}
 	},
+	"fana-bergen-gateway-01": {
+		"alias": "Fana#1 (Bergen)",
+		"latitude": 60.3448914,
+		"longitude": 5.3811148,
+		"altitude": {}
+	},
+	"fana-bergen-gateway-02": {
+		"alias": "Fana Paradis (Bergen)",
+		"latitude": 60.338,
+		"longitude": 5.34604,
+		"altitude": {}
+	},
+	"florvaag-1": {
+		"alias": "Florvaag (Bergen)",
+		"latitude": 60.4317783,
+		"longitude": 5.2318648,
+		"altitude": {}
+	},
 	"paradis-bergen-gateway-01": {
 		"alias": "Paradis (Bergen)",
 		"latitude": 60.337708,
 		"longitude": 5.346036,
+		"altitude": {}
+	},
+	"stongafjellet-1": {
+		"alias": "Stongafjellet (Bergen)",
+		"latitude": 60.406726846834225,
+		"longitude": 5.197898919947757,
+		"altitude": {}
+	},
+	"raundalen-voss-gateway-01": {
+		"alias": "Raundalen (Voss)",
+		"latitude": 60.6704817,
+		"longitude": 6.7657077,
 		"altitude": {}
 	},
 
@@ -229,6 +280,12 @@
 		"altitude": 76
 	},
 
+	"tower-hvs": {
+		"alias": "CS (Hilversum)",
+		"latitude": 52.2298054,
+		"longitude": 5.1792048,
+		"altitude": {}
+	},
 	"eui-1dee1f5bc563aa18": {
 		"alias": "Omroeptoren (Hilversum)",
 		"latitude": 52.2426129,
@@ -236,6 +293,12 @@
 		"altitude": {}
 	},
 
+	"eui-58a0cbfffe80350d": {
+		"alias": "(TTIG Tilburg)",
+		"latitude": 51.5656133,
+		"longitude": 5.0695025,
+		"altitude": ""
+	},
 	"eui-aa555a0000100017": {
 		"alias": "(Het Laar Tilburg)",
 		"latitude": 51.540176,
@@ -265,6 +328,12 @@
 		"latitude": 51.56290,
 		"longitude": 5.049794,
 		"altitude": {}
+	},
+	"aa555a0000088183": {
+		"alias": "(O Tilburg)",
+		"latitude": 51.5570458,
+		"longitude": 5.1100055,
+		"altitude": ""
 	},
 
 	"eui-0000024b080e0ffd": {
