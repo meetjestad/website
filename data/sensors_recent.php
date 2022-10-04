@@ -232,11 +232,16 @@ EOF;
 
 				$spreading_factor = $message['uplink_message']['settings']['data_rate']['lora']['spreading_factor'];
 				$bandwidth =        $message['uplink_message']['settings']['data_rate']['lora']['bandwidth'] / 1000;
+				if (array_key_exists('coding_rate', $message['uplink_message']['settings']))
+					$coding_rate =      $message['uplink_message']['settings']['coding_rate']; // Older format
+				else
+					$coding_rate =      $message['uplink_message']['settings']['data_rate']['lora']['coding_rate']; // Since 2022-09 or so
+
 				$data_rate = sprintf("SF%sBW%s", $spreading_factor, $bandwidth);
 				$metadata = [
 					'gateways'    => $gateways,
 					'frequency'   => $message['uplink_message']['settings']['frequency'] / 1000000.,
-					'coding_rate' => $message['uplink_message']['settings']['coding_rate'],
+					'coding_rate' => $coding_rate,
 					'data_rate'   => $data_rate,
 					// Default values (zeroes) are omitted: https://github.com/TheThingsNetwork/lorawan-stack/issues/3874
 					'counter'     => isset($message['uplink_message']['f_cnt']) ? $message['uplink_message']['f_cnt'] : 0,
