@@ -5,6 +5,8 @@ RewriteRule css/(.*) css/$1 [L]
 RewriteRule img/(.*) img/$1 [L]
 RewriteRule js/(.*) js/$1 [L]
 
+RewriteRule ^loading.svg$ loading.svg [L]
+RewriteRule ^loading.apng$ loading.apng [L]
 RewriteRule ^series.php$ series.php [L]
 RewriteRule ^health.php$ health.php [L]
 RewriteRule ^list.html$ list.html [L]

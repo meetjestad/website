@@ -6,7 +6,7 @@
 		"altitude": 20
 	},
 	"mjs-gateway-1": {
-		"alias": "Meetjestad #1 (De WAR)",
+		"alias": "Meetjestad #1 (De oude WAR)",
 		"latitude": 52.16270314,
 		"longitude": 5.37691284,
 		"altitude": 20
@@ -36,7 +36,10 @@
 		"altitude": 5
 	},
 	"mjs-gateway-5": {
-		"alias": "Meetjestad #5 (Matthijs)"
+		"alias": "Meetjestad #5 (De WAR HBW)",
+		"latitude": 52.15425,
+		"longitude": 5.39754,
+		"altitude": 20
 	},
 	"wietse": {
 		"alias": "(Schothorst-N)",

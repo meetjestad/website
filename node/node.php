@@ -119,6 +119,7 @@
 <?php if ($light !== null) {?>
 				if (selection["lux"].checked) series+= (series?',':'') + 'lux';
 <?php } ?>
+				document.getElementById('series').src = 'loading.apng';
 				document.getElementById('series').src = 'series.php?id=<?=htmlspecialchars(rawurlencode($id))?>&time='+time+'&series='+series+'&width='+(document.getElementById('paneData').offsetWidth-120);
 			}
 		</script>
@@ -152,11 +153,13 @@
 						<input type="checkbox" name="lux" onclick="drawSeries();"/><span style="color:#8f8fbf;">E</span>
 <?php } ?>
 					</div>
-					<input style="margin-left:40px;" type="radio" name="time" value="1" checked="checked" onclick="drawSeries();"/> 1D
-					<input type="radio" name="time" value="7" onclick="drawSeries();"/> 1W
-					<input type="radio" name="time" value="30" onclick="drawSeries();"/> 1M
-					<input type="radio" name="time" value="365" onclick="drawSeries();"/> 1Y
-					<input type="radio" name="time" value="0" onclick="drawSeries();"/> All
+					<div style="clear:left;">
+						<input style="margin-left:40px;" type="radio" name="time" value="1" checked="checked" onclick="drawSeries();"/> 1D
+						<input type="radio" name="time" value="7" onclick="drawSeries();"/> 1W
+						<input type="radio" name="time" value="30" onclick="drawSeries();"/> 1M
+						<input type="radio" name="time" value="365" onclick="drawSeries();"/> 1Y
+						<input type="radio" name="time" value="0" onclick="drawSeries();"/> All
+					</div>
 				</form>
 				<br/>
 <!--
