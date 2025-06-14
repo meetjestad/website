@@ -304,6 +304,7 @@
 ?>
 					</select><br/>
 					<input type="text" name="ids" id="idlist" placeholder="2,5,19-23" style="width:330px; margin-top:5px;"/>
+					<p>NOTE: Datasets are outdated, best download all data and filter results based on sensor location.</p>
 				</fieldset>
 
 				<h3>3. Download data or generate map</h3>
